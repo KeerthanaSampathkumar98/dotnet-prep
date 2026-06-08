@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>.NET Interview Prep — Part 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080810;--s1:#0f0f1a;--s2:#161625;--s3:#1e1e30;--s4:#252538;--c1:#7EFFA0;--c2:#FF7EB3;--c3:#7EB8FF;--c4:#FFD07E;--c5:#C47EFF;--t1:#f2f2ff;--t2:#a0a0c0;--t3:#5a5a80;--bd:#2a2a45;--danger:#ff6b6b;--warn:#ffd07e;}
+html,body{height:100%;overflow:hidden;font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t1);font-size:14px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--s4);border-radius:2px}
+#login{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--bg);background-image:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(196,126,255,.06),transparent 60%),radial-gradient(ellipse 50% 60% at 80% 80%,rgba(255,126,179,.05),transparent 60%)}
+.lchip{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--c5);border:1px solid rgba(196,126,255,.25);border-radius:20px;padding:4px 14px;margin-bottom:14px;background:rgba(196,126,255,.05)}
+.lh{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:8px;text-align:center}
+.lh em{color:var(--c5);font-style:normal}
+.lsub{color:var(--t2);font-size:13px;margin-bottom:10px;text-align:center}
+.lnav{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;justify-content:center}
+.lnav a{font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 14px;border-radius:20px;border:1px solid var(--bd);color:var(--t3);text-decoration:none;transition:.15s}
+.lnav a:hover{border-color:var(--c3);color:var(--c3)}
+.lnav a.curr{border-color:var(--c5);color:var(--c5);background:rgba(196,126,255,.08)}
+.urow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;max-width:720px}
+.ucard{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px 14px;text-align:center;cursor:pointer;width:128px;transition:all .2s;position:relative;overflow:hidden}
+.ucard:hover{transform:translateY(-3px);border-color:var(--col)}
+.ucard.sel{border-color:var(--col);background:color-mix(in srgb,var(--col) 8%,transparent)}
+.uav{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin:0 auto 10px;border:2px solid var(--col);background:color-mix(in srgb,var(--col) 15%,transparent);color:var(--col)}
+.unm{font-size:13px;font-weight:600;margin-bottom:2px}.url{font-size:11px;color:var(--t3)}
+.upb{position:absolute;bottom:0;left:0;height:2px;transition:width .4s;background:var(--col)}
+.pinw{display:none;width:100%;max-width:300px;text-align:center}
+.pinw.show{display:block}
+.pinl{font-size:13px;color:var(--t2);margin-bottom:14px}
+.pind{display:flex;justify-content:center;gap:12px;margin-bottom:20px}
+.pdot{width:12px;height:12px;border-radius:50%;border:2px solid var(--bd);transition:.15s}
+.pdot.on{border-color:var(--c5);background:var(--c5)}
+.pinp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:220px;margin:0 auto}
+.pk{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:13px;font-size:17px;font-family:'JetBrains Mono',monospace;color:var(--t1);transition:all .12s;cursor:pointer}
+.pk:hover{background:var(--s3);border-color:var(--c5)}.pk:active{transform:scale(.94)}
+.pine{color:var(--danger);font-size:12px;margin-top:10px;min-height:16px;font-family:'JetBrains Mono',monospace}
+#app{display:none;flex-direction:column;height:100vh}
+.topbar{height:52px;min-height:52px;background:var(--s1);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:50}
+.tlogo{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--c5)}
+.tsep{width:1px;height:20px;background:var(--bd)}
+.tpart{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c5);letter-spacing:.08em}
+.tnav{display:flex;gap:6px;margin-left:8px}
+.tnav a{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--bd);color:var(--t3);text-decoration:none;transition:.15s}
+.tnav a:hover{border-color:var(--c5);color:var(--c5)}
+.tr{margin-left:auto;display:flex;align-items:center;gap:10px}
+.tav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700}
+.tnm{font-size:13px;font-weight:500}
+.outbtn{background:none;border:1px solid var(--bd);border-radius:7px;padding:4px 12px;font-size:12px;color:var(--t3);cursor:pointer;transition:.15s}
+.outbtn:hover{border-color:var(--danger);color:var(--danger)}
+.ab{display:flex;flex:1;min-height:0;overflow:hidden}
+.sb{width:230px;min-width:230px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.sbsi{padding:10px 10px 0}
+.sbsi input{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:7px 10px;font-size:12px;font-family:'Instrument Sans',sans-serif;color:var(--t1);outline:none}
+.sbsi input:focus{border-color:var(--c5)}.sbsi input::placeholder{color:var(--t3)}
+.sbsc{overflow-y:auto;flex:1;padding:6px 8px 12px}
+.sbsec{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--t3);text-transform:uppercase;padding:12px 8px 6px}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--t2);transition:all .12s;margin-bottom:1px;font-size:12.5px;border:1px solid transparent}
+.ni:hover{background:var(--s2);color:var(--t1)}
+.ni.active{background:color-mix(in srgb,var(--col,var(--c5)) 12%,transparent);color:var(--col,var(--c5));border-color:color-mix(in srgb,var(--col,var(--c5)) 25%,transparent)}
+.nd{width:6px;height:6px;border-radius:50%;background:var(--bd);flex-shrink:0}
+.ni.active .nd,.ni.done .nd{background:var(--col,var(--c5))}
+.ns{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--s3);border-radius:20px;padding:1px 7px}
+.main{flex:1;overflow-y:auto;padding:24px;background:var(--bg)}
+.dh h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0 24px}
+.sbox{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.sv{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;margin-bottom:2px}
+.sl{font-size:11px;color:var(--t3)}
+.sec{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--t3);text-transform:uppercase;margin:20px 0 10px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px}
+.pt{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .18s}
+.pt:hover{border-color:var(--col);transform:translateY(-1px)}
+.ptt{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ptd{width:8px;height:8px;border-radius:50%;background:var(--col);flex-shrink:0}
+.ptn{font-size:13px;font-weight:500;flex:1}.ptc{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3)}
+.pbb{height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.pbf{height:100%;border-radius:2px;transition:width .5s;background:var(--col)}
+.ppc{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);margin-top:5px}
+.tban{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:20px 24px;margin-bottom:20px;background-image:radial-gradient(ellipse 50% 80% at 90% 50%,color-mix(in srgb,var(--col) 8%,transparent),transparent 60%)}
+.btop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.btt{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--col)}
+.bts{font-size:13px;color:var(--t2);margin-top:4px}
+.bcs{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid;letter-spacing:.04em}
+.cc{border-color:rgba(126,255,160,.3);color:var(--c1);background:rgba(126,255,160,.06)}
+.cs{border-color:rgba(255,208,126,.3);color:var(--c4);background:rgba(255,208,126,.06)}
+.ca{border-color:rgba(196,126,255,.3);color:var(--c5);background:rgba(196,126,255,.06)}
+.stbtn{background:var(--col);color:#000;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap}
+.stbtn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.clist{display:flex;flex-direction:column;gap:6px;margin-bottom:24px}
+.cx{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.cxh{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;transition:.12s;user-select:none}
+.cxh:hover{background:var(--s2)}
+.ctag{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;border:1px solid;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0}
+.cnm{font-size:13px;font-weight:500;flex:1}
+.carr{color:var(--t3);font-size:14px;transition:transform .2s;flex-shrink:0}
+.carr.open{transform:rotate(90deg)}
+.cxb{display:none;padding:0 16px 16px;border-top:1px solid var(--bd)}
+.cxb.open{display:block}
+.ctx{font-size:13px;line-height:1.8;color:var(--t2);margin-top:12px}
+.ctx strong{color:var(--t1);font-weight:600}
+.ctx code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--s3);padding:1px 5px;border-radius:4px;color:var(--c3)}
+pre.cb{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.75;overflow-x:auto;margin:10px 0;white-space:pre;color:#c9d1d9}
+.kw{color:#ff7eb3}.str{color:#ffd07e}.cmt{color:#4b5563}.num{color:#f8a04b}
+.dftab{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+.dftab th{background:var(--s3);padding:7px 10px;text-align:left;color:var(--t1);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:11px}
+.dftab td{padding:7px 10px;border-top:1px solid var(--bd);color:var(--t2);vertical-align:top;font-size:12px}
+.dftab tr:hover td{background:var(--s2)}
+.bl{list-style:none;margin:6px 0}
+.bl li{padding:3px 0 3px 16px;position:relative;color:var(--t2);font-size:13px;line-height:1.7}
+.bl li::before{content:'›';position:absolute;left:0;color:var(--col,var(--c5));font-weight:700}
+.tsh{max-width:820px}
+.ttop{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.ti h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:700}
+.ti p{font-size:12px;color:var(--t2);margin-top:2px}
+.tmr{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:8px 16px;color:var(--c5)}
+.tmr.warn{color:var(--warn)}.tmr.danger{color:var(--danger);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.qpr{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.qp{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;background:var(--s2);border:1px solid var(--bd);color:var(--t3);transition:.15s}
+.qp.cur{background:var(--c5);color:#000;border-color:var(--c5);font-weight:700}
+.qp.ans{background:rgba(126,184,255,.15);border-color:var(--c3);color:var(--c3)}
+.qp.ok{background:rgba(126,255,160,.15);border-color:var(--c1);color:var(--c1)}
+.qp.bad{background:rgba(255,107,107,.15);border-color:var(--danger);color:var(--danger)}
+.qcard{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:22px;margin-bottom:12px}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.qdiff{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;border:1px solid}
+.qde{border-color:rgba(126,255,160,.3);color:var(--c1)}.qdm{border-color:rgba(255,208,126,.3);color:var(--c4)}.qdh{border-color:rgba(255,126,179,.3);color:var(--c2)}
+.qtx{font-size:15px;font-weight:500;line-height:1.65;margin-bottom:16px}
+.qco{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.7;margin-bottom:14px;overflow-x:auto;white-space:pre;color:#c9d1d9}
+.opts{display:grid;gap:8px}
+.opt{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px 16px;cursor:pointer;font-size:13px;transition:all .12s;display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.opt:hover:not(.locked){border-color:var(--c5);background:rgba(196,126,255,.05)}
+.opt.sel{border-color:var(--c5);background:rgba(196,126,255,.08)}
+.opt.correct{border-color:var(--c1);background:rgba(126,255,160,.08);color:var(--c1)}
+.opt.wrong{border-color:var(--danger);background:rgba(255,107,107,.08);color:var(--danger)}
+.ol{font-family:'JetBrains Mono',monospace;font-size:10px;min-width:22px;height:22px;border-radius:5px;background:var(--s3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:.12s}
+.opt.sel .ol{background:var(--c5);color:#000}.opt.correct .ol{background:var(--c1);color:#000}.opt.wrong .ol{background:var(--danger);color:#fff}
+.expl{background:rgba(126,255,160,.05);border:1px solid rgba(126,255,160,.2);border-radius:8px;padding:12px 14px;margin-top:10px;font-size:13px;color:var(--c1);line-height:1.65;display:none}
+.expl.show{display:block}
+.tnav{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.btn{border-radius:8px;padding:9px 18px;font-size:13px;font-weight:500;font-family:'Instrument Sans',sans-serif;border:1px solid var(--bd);background:var(--s2);color:var(--t1);cursor:pointer;transition:all .12s}
+.btn:hover{background:var(--s3)}
+.btnp{background:var(--c5);color:#000;border-color:var(--c5);font-weight:700}.btnp:hover{filter:brightness(1.08)}
+.btnw{border-color:var(--warn);color:var(--warn)}
+.rh{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:28px;text-align:center;margin-bottom:16px}
+.rsc{font-family:'Syne',sans-serif;font-size:72px;font-weight:800;letter-spacing:-.04em;margin-bottom:4px}
+.rlb{font-size:13px;color:var(--t2);margin-bottom:14px}
+.rgr{display:inline-block;padding:6px 20px;border-radius:20px;font-size:13px;font-weight:700;font-family:'Syne',sans-serif;margin-bottom:6px;border:1px solid}
+.gra{border-color:rgba(126,255,160,.4);color:var(--c1);background:rgba(126,255,160,.08)}
+.grb{border-color:rgba(255,208,126,.4);color:var(--c4);background:rgba(255,208,126,.08)}
+.grc{border-color:rgba(255,107,107,.4);color:var(--danger);background:rgba(255,107,107,.08)}
+.rst{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.rs{background:var(--s2);border-radius:10px;padding:12px;font-size:11px;color:var(--t3)}
+.rs strong{display:block;font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--t1);margin-bottom:1px}
+.ri{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:8px}
+.riq{font-size:14px;font-weight:500;line-height:1.5;margin-bottom:10px}
+.ria{font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:4px}
+.rok{background:rgba(126,255,160,.07);color:var(--c1)}.rbd{background:rgba(255,107,107,.07);color:var(--danger)}
+.rex{font-size:12px;color:var(--t3);margin-top:6px;line-height:1.65}
+.hr2{background:var(--s1);border:1px solid var(--bd);border-radius:10px;display:flex;align-items:center;gap:12px;padding:14px 16px;margin-bottom:8px;flex-wrap:wrap}
+.ht{font-size:13px;font-weight:500;flex:1;min-width:140px}.hd{font-size:11px;color:var(--t3)}
+.hsc{font-family:'Syne',sans-serif;font-size:24px;font-weight:800}
+.empty{text-align:center;padding:60px 20px;color:var(--t3)}
+</style>
+</head>
+<body>
+<div id="login">
+  <div class="lchip">⬡ .NET Interview Prep — Part 3 of 3</div>
+  <div class="lh">Testing · Security · <em>JS</em> · Agile</div>
+  <div class="lsub">Unit Testing · Security & OWASP · JavaScript & jQuery · HTML/CSS · Agile/Scrum · 5 topics · 39 questions</div>
+  <div class="lnav">
+    <a href="part1.html">← Part 1</a>
+    <a href="part2.html">← Part 2</a>
+    <a class="curr" href="#">Part 3</a>
+  </div>
+  <div class="urow" id="urow"></div>
+  <div class="pinw" id="pinw">
+    <div class="pinl" id="pinl">Enter PIN</div>
+    <div class="pind" id="pind"></div>
+    <div class="pinp" id="pinp"></div>
+    <div class="pine" id="pine"></div>
+  </div>
+</div>
+<div id="app">
+  <div class="topbar">
+    <div class="tlogo">// .NET PREP</div>
+    <div class="tsep"></div>
+    <span class="tpart">PART 3/3</span>
+    <div class="tnav">
+      <a href="part1.html">← Part 1</a>
+      <a href="part2.html">← Part 2</a>
+    </div>
+    <span id="hpg" style="font-size:12px;color:var(--t3);margin-left:8px">Dashboard</span>
+    <div class="tr">
+      <div class="tav" id="hav"></div>
+      <span class="tnm" id="hnm"></span>
+      <button class="outbtn" onclick="logout()">Exit</button>
+    </div>
+  </div>
+  <div class="ab">
+    <div class="sb">
+      <div class="sbsi"><input type="text" placeholder="🔍 Search..." id="sbs" oninput="fSB(this.value)"></div>
+      <div class="sbsc" id="sbsc"></div>
+    </div>
+    <div class="main" id="main"></div>
+  </div>
+</div>
+<script>
+const USERS=[
+  {id:'u1',name:'Keerthana',role:'Senior Dev·TCS',pin:'1234',col:'#7EFFA0',init:'KS'},
+  {id:'u2',name:'Naveen',role:'Developer',pin:'2345',col:'#FF7EB3',init:'NV'},
+  {id:'u3',name:'Priya',role:'Developer',pin:'3456',col:'#7EB8FF',init:'PR'},
+  {id:'u4',name:'Arun',role:'Developer',pin:'4567',col:'#FFD07E',init:'AR'},
+  {id:'u5',name:'Deepa',role:'Developer',pin:'5678',col:'#C47EFF',init:'DP'}
+];
+const TOPICS=[
+{id:'testing',name:'Unit Testing & Mocking',col:'#FF7EB3',
+concepts:[
+{name:'xUnit, Moq & AAA Pattern',tag:'core',
+txt:`<strong>AAA Pattern</strong>: Arrange (setup) → Act (execute method) → Assert (verify result).<br>
+<strong>[Fact]</strong>: single test. <strong>[Theory] + [InlineData]</strong>: parameterized — runs same test with different inputs.<br>
+<strong>Mock.Setup().Returns()</strong>: configure mock to return specific value.<br>
+<strong>Mock.Verify()</strong>: assert method was called (Times.Once, Times.Never, Times.Exactly(n)).<br>
+<strong>It.IsAny&lt;T&gt;()</strong>: matches any argument of type T. <strong>Test naming</strong>: MethodName_Scenario_ExpectedResult.`,
+code:`public class OrderServiceTests {
+    private readonly Mock<IOrderRepository> _repo = new();
+    private readonly Mock<IEmailService> _email = new();
+    private readonly OrderService _sut;
+
+    public OrderServiceTests() =>
+        _sut = new OrderService(_repo.Object, _email.Object);
+
+    [Fact]
+    public async Task CreateOrder_ValidInput_ReturnsCreatedOrder() {
+        // Arrange
+        var dto = new CreateOrderDto { CustomerId=1, Amount=100m };
+        _repo.Setup(r => r.AddAsync(It.IsAny<Order>())).ReturnsAsync(42);
+
+        // Act
+        var result = await _sut.CreateAsync(dto);
+
+        // Assert
+        Assert.Equal(42, result.Id);
+        _repo.Verify(r => r.AddAsync(It.IsAny<Order>()), Times.Once);
+        _email.Verify(e => e.SendAsync(It.IsAny<string>()), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(-999)]
+    public async Task CreateOrder_InvalidAmount_ThrowsException(decimal amt) =>
+        await Assert.ThrowsAsync<ArgumentException>(
+            () => _sut.CreateAsync(new() { Amount = amt }));
+}`},
+{name:'NUnit, MSTest vs xUnit Differences',tag:'core',
+txt:`<table class="dftab"><tr><th>Feature</th><th>xUnit</th><th>NUnit</th><th>MSTest</th></tr>
+<tr><td>Test method</td><td>[Fact]</td><td>[Test]</td><td>[TestMethod]</td></tr>
+<tr><td>Parameterized</td><td>[Theory]+[InlineData]</td><td>[TestCase]</td><td>[DataRow]</td></tr>
+<tr><td>Setup</td><td>Constructor</td><td>[SetUp]</td><td>[TestInitialize]</td></tr>
+<tr><td>Teardown</td><td>IDisposable</td><td>[TearDown]</td><td>[TestCleanup]</td></tr>
+<tr><td>Test class</td><td>No attribute needed</td><td>[TestFixture]</td><td>[TestClass]</td></tr>
+</table>
+<strong>xUnit</strong>: most modern, preferred for .NET Core projects. Creates new instance per test (no shared state).`,
+code:`// NUnit equivalent
+[TestFixture]
+public class OrderTests {
+    [SetUp]
+    public void Setup() { /* runs before each test */ }
+
+    [Test]
+    public void CreateOrder_Valid_Succeeds() { /* ... */ }
+
+    [TestCase(0)]
+    [TestCase(-1)]
+    public void CreateOrder_InvalidAmount_Throws(decimal amt) { /* ... */ }
+}
+
+// MSTest equivalent
+[TestClass]
+public class OrderTests {
+    [TestInitialize]
+    public void Setup() { /* runs before each test */ }
+
+    [TestMethod]
+    public void CreateOrder_Valid_Succeeds() { /* ... */ }
+
+    [DataRow(0), DataRow(-1), DataTestMethod]
+    public void CreateOrder_InvalidAmount_Throws(decimal amt) { /* ... */ }
+}`}
+],
+tests:[
+{q:'Mock.Setup().Returns() does what?',opts:['Runs real method','Configures mock to return specific value','Verifies call count','Creates spy'],ans:1,diff:'easy',exp:'Setup().Returns() configures the mock so when the specified method is called, it returns the provided value instead of executing the real implementation.'},
+{q:'[Fact] vs [Theory] in xUnit:',opts:['[Fact] takes params','[Theory]+[InlineData] = parameterized; [Fact] = single test','Same thing','[Theory] runs once'],ans:1,diff:'easy',exp:'[Fact] is a single test with no parameters. [Theory] with [InlineData] runs the same test logic with different input values — parameterized testing.'},
+{q:'AAA in unit testing stands for:',opts:['Authenticate Authorize Audit','Arrange Act Assert','Apply Async Await','Abstract Analyze Assert'],ans:1,diff:'easy',exp:'Arrange (set up mocks/data), Act (call the method under test), Assert (verify result/behavior). This structure makes tests readable and maintainable.'},
+{q:'Mock.Verify(m=>m.Save(), Times.Once) does what?',opts:['Calls Save()','Returns value from Save()','Asserts Save() was called exactly once','Throws if Save() throws'],ans:2,diff:'medium',exp:'Verify() asserts that the mocked method was called with the specified arguments the specified number of times. Throws if the expectation is not met.'},
+{q:'Which test framework creates a new class instance per test (preventing shared state)?',opts:['NUnit','MSTest','xUnit','All the same'],ans:2,diff:'medium',exp:'xUnit creates a new instance of the test class for every test method, preventing shared state between tests. NUnit and MSTest reuse the same instance across tests in a class.'},
+{q:'It.IsAny<string>() in Moq means:',opts:['Only null string','Only empty string','Match any string argument','Match specific string'],ans:2,diff:'easy',exp:'It.IsAny<T>() is an argument matcher that matches any value of type T. Use it when you do not care about the exact argument value passed to the mock.'},
+{q:'What is the benefit of mocking IOrderRepository in tests?',opts:['Faster queries','Test in isolation without real DB — deterministic, fast','Better coverage','Real data testing'],ans:1,diff:'easy',exp:'Mocking isolates the class under test from its dependencies. Tests run without a real database — they are fast, deterministic, and can simulate any scenario (error conditions etc.).'},
+{q:'Assert.ThrowsAsync<ArgumentException>() verifies:',opts:['No exception thrown','A specific exception type IS thrown','Exception message content only','Warning logged'],ans:1,diff:'easy',exp:'Assert.ThrowsAsync<T> verifies that the async method throws an exception of type T. The test fails if no exception is thrown or a different exception type is thrown.'}
+]},
+
+{id:'security',name:'Security & OWASP',col:'#7EFFA0',
+concepts:[
+{name:'OWASP Top 10 & .NET Security Vulnerabilities',tag:'senior',
+txt:`<ul class="bl">
+<li><strong>SQL Injection</strong>: parameterized queries / EF Core. NEVER string concatenation in SQL</li>
+<li><strong>XSS</strong>: encode output (@Html.Encode), Content-Security-Policy header</li>
+<li><strong>CSRF</strong>: [ValidateAntiForgeryToken] on POST. HttpOnly cookies</li>
+<li><strong>Path Traversal (CWE-22)</strong>: Path.GetFileName() strips ../. Use Guid as filename</li>
+<li><strong>Broken Auth</strong>: JWT with short expiry + refresh tokens. HTTPS only</li>
+<li><strong>Sensitive Data</strong>: never log passwords/cards/PII. Encrypt at rest + in transit</li>
+<li><strong>Mass Assignment</strong>: use DTOs — never bind entity directly from [FromBody]</li>
+<li><strong>Integer Overflow</strong>: validate ranges + use checked{} (your Humana DAST experience!)</li>
+</ul>
+<strong>SAST (Static)</strong>: SonarQube, Checkmarx — analyzes code without running. Finds code-level bugs.<br>
+<strong>DAST (Dynamic)</strong>: runs against live app — finds runtime vulnerabilities like your Humana work.`,
+code:`// ✅ Path Traversal fix (CWE-22) — your Checkmarx/Humana fix!
+public async Task<IActionResult> Upload(IFormFile file) {
+    var allowed = new[] { ".pdf", ".docx", ".xlsx" };
+    var ext = Path.GetExtension(file.FileName).ToLower();
+    if (!allowed.Contains(ext)) return BadRequest("Not allowed");
+    if (file.Length > 10 * 1024 * 1024) return BadRequest("Too large");
+    // NEVER use file.FileName as storage path
+    string safe = $"{Guid.NewGuid()}{ext}";  // ✅ Guid strips traversal
+    string path = Path.Combine(_uploadDir, safe);
+    await file.CopyToAsync(System.IO.File.Create(path));
+    return Ok(new { filename = safe });
+}
+
+// ✅ Mass Assignment — use DTO, not entity
+// ❌ public IActionResult Update([FromBody] User user) // exposes IsAdmin!
+public record UpdateUserDto(string Name, string Email); // safe fields only ✅
+
+// ✅ Integer overflow prevention (your DAST SubmitAuthUpdate fix)
+if (dto.RetryCount is < 0 or > 10) return BadRequest("Out of range");
+checked { int r = dto.Amount + dto.Surcharge; } // throws OverflowException ✅
+
+// ✅ Never log sensitive data
+_log.LogInformation("User {UserId} logged in", userId); // ok
+// ❌ _log.LogDebug("Password: {Password}", password);  // NEVER`},
+{name:'HTTPS, CORS & Security Headers',tag:'core',
+txt:`<strong>HTTPS</strong>: always redirect HTTP → HTTPS in production. UseHttpsRedirection().<br>
+<strong>CORS</strong>: restrict which origins can call your API. NEVER AllowAnyOrigin() in production!<br>
+<strong>Security headers</strong>: X-Content-Type-Options, X-Frame-Options, Content-Security-Policy reduce attack surface.<br>
+<strong>HttpOnly cookie</strong>: JavaScript cannot read it — prevents XSS from stealing session/JWT.`,
+code:`// CORS — specific origins only ✅
+builder.Services.AddCors(o => o.AddPolicy("Portal", p =>
+    p.WithOrigins("https://portal.myapp.com")
+     .WithMethods("GET", "POST", "PUT", "DELETE")
+     .WithHeaders("Authorization", "Content-Type")));
+
+// ❌ NEVER in production
+// p.AllowAnyOrigin() — allows ANY website to call your API
+
+// Security headers middleware
+app.Use(async (ctx, next) => {
+    ctx.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    ctx.Response.Headers.Add("X-Frame-Options", "DENY");
+    ctx.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+    await next();
+});
+
+// HttpOnly + Secure cookies
+var opts = new CookieOptions { HttpOnly=true, Secure=true, SameSite=SameSiteMode.Strict };
+Response.Cookies.Append("session", token, opts);`}
+],
+tests:[
+{q:'Path.GetFileName() prevents which vulnerability?',opts:['SQL Injection','XSS','Path Traversal (CWE-22)','CSRF'],ans:2,diff:'medium',exp:'Path.GetFileName() strips directory components including ../ and ..\\ sequences. Without it, a malicious filename like ../../web.config could write files outside the upload directory.'},
+{q:'SAST vs DAST: which analyzes code WITHOUT running the app?',opts:['DAST','SAST','Both','Neither'],ans:1,diff:'medium',exp:'SAST (Static) analyzes source code/binaries without executing. Tools: SonarQube, Checkmarx (your Humana experience). DAST sends requests to a running application.'},
+{q:'Mass Assignment prevention:',opts:['Use [Authorize]','Use DTOs — expose only safe fields','Use HTTPS','Validate JWT'],ans:1,diff:'medium',exp:'Mass Assignment: binding an entity directly from [FromBody] lets attackers set sensitive fields like IsAdmin=true. Always use DTOs with only the fields users should be allowed to modify.'},
+{q:'AllowAnyOrigin() in CORS should NEVER be used in production because:',opts:['Slower performance','Allows any website to call your API — removes cross-origin protection','Disables HTTPS','Breaks authentication'],ans:1,diff:'easy',exp:'AllowAnyOrigin() removes cross-origin protection entirely, letting any website make requests to your API. This exposes your API to cross-site attacks.'},
+{q:'SQL Injection best prevention in C#:',opts:['Escape quotes manually','Parameterized queries or EF Core','Convert to uppercase','Limit input length only'],ans:1,diff:'easy',exp:'Parameterized queries (or EF Core which auto-parameterizes) separate SQL code from data. The DB engine treats parameters as pure data, never as executable SQL.'},
+{q:'HttpOnly cookie flag prevents:',opts:['CSRF','SQL Injection','XSS stealing the cookie via JavaScript','Brute force'],ans:2,diff:'medium',exp:'HttpOnly prevents JavaScript from reading the cookie. If an XSS vulnerability exists, attackers cannot steal HttpOnly cookies with document.cookie, protecting session tokens.'},
+{q:'Integer overflow: checked{} block does what?',opts:['Ignores overflow silently','Throws OverflowException instead of wrapping around','Returns null on overflow','Logs a warning'],ans:1,diff:'medium',exp:'checked{} tells the runtime to throw OverflowException if arithmetic overflow occurs, instead of silently wrapping around (which can cause security vulnerabilities like your Humana DAST finding).'},
+{q:'CWE-22 is the identifier for:',opts:['SQL Injection','Cross-Site Scripting','Path Traversal','Integer Overflow'],ans:2,diff:'medium',exp:'CWE-22 is Path Traversal — when user-controlled input is used in file path operations without sanitization, allowing access to files outside the intended directory.'}
+]},
+
+{id:'javascript',name:'JavaScript & jQuery',col:'#FFD07E',
+concepts:[
+{name:'var, let, const, Scope, Hoisting & Closures',tag:'core',
+txt:`<strong>var</strong>: function-scoped, hoisted AND initialized to undefined.<br>
+<strong>let/const</strong>: block-scoped, hoisted but NOT initialized (Temporal Dead Zone — TDZ). ReferenceError if accessed before declaration.<br>
+<strong>const</strong>: cannot be reassigned. Object properties CAN still be mutated.<br>
+<strong>Closure</strong>: inner function retains access to outer scope variables even after outer function returns.`,
+code:`// var hoisting
+console.log(x); // undefined (not error!) — var hoisted + initialized
+var x = 5;
+// console.log(y); // ReferenceError! — TDZ
+let y = 10;
+
+// Classic loop bug
+for (var i=0; i<3; i++) {
+    setTimeout(() => console.log(i), 100); // 3,3,3 ❌ var shared
+}
+for (let i=0; i<3; i++) {
+    setTimeout(() => console.log(i), 100); // 0,1,2 ✅ let block-scoped
+}
+
+// Closure
+function counter() {
+    let n = 0;  // captured in closure
+    return {
+        inc: () => ++n,
+        val: () => n
+    };
+}
+const c = counter();
+c.inc(); c.inc();
+console.log(c.val()); // 2 — n persists in closure`},
+{name:'Promises, async/await, ES6+ & jQuery AJAX',tag:'core',
+txt:`<strong>Promise states</strong>: pending → fulfilled (resolved) / rejected. Transition is permanent.<br>
+<strong>async/await</strong>: syntactic sugar over Promises. try/catch works naturally.<br>
+<strong>ES6+ key features</strong>: arrow functions, destructuring, spread, template literals, optional chaining <code>?.</code>, nullish coalescing <code>??</code>.<br>
+<strong>jQuery AJAX</strong>: still common in legacy ASP.NET MVC. RequireVerificationToken needed for POST.`,
+code:`// async/await — preferred over .then chains
+async function loadOrders() {
+    try {
+        const res = await fetch('/api/orders');
+        if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
+        const data = await res.json();
+        renderOrders(data);
+    } catch (err) { showError(err.message); }
+    finally { hideSpinner(); }
+}
+
+// ES6+ features
+const { name, email, role = 'user' } = userData;    // destructuring + default
+const merged = { ...defaults, ...overrides };         // spread
+const city = user?.address?.city ?? 'Unknown';        // optional chain + null coalesce
+
+// jQuery AJAX (ASP.NET MVC legacy)
+$.ajax({
+    url: '/Orders/Create', method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({ customerId: 1, amount: 100 }),
+    headers: { 'RequestVerificationToken':
+        $('[name=__RequestVerificationToken]').val() }, // anti-CSRF
+    success: d => console.log('Created:', d),
+    error: xhr => console.error(xhr.statusText)
+});
+
+// DOM — event delegation
+document.querySelector('#list').addEventListener('click', e => {
+    const item = e.target.closest('[data-id]');
+    if (item) loadDetail(item.dataset.id);
+});`}
+],
+tests:[
+{q:'console.log(x); var x=5; What prints?',opts:['5','ReferenceError','undefined','null'],ans:2,diff:'medium',exp:'var is hoisted and initialized to undefined. The declaration is moved to scope top. Assignment x=5 happens later, so at the log, x is undefined.'},
+{q:'for(var i) loop + setTimeout — what prints?',opts:['0,1,2','3,3,3','1,2,3','undefined'],ans:1,diff:'hard',exp:'var is function-scoped — all iterations share the same i. By the time setTimeout fires, loop is done and i=3. Use let (block-scoped) to get 0,1,2 correctly.'},
+{q:'Optional chaining user?.address?.city when address is null returns:',opts:['Throws TypeError','null','undefined','empty string'],ans:2,diff:'easy',exp:'Optional chaining (?.) short-circuits to undefined if any part of the chain is null/undefined, instead of throwing TypeError.'},
+{q:'Promise: pending → then?',opts:['resolved → rejected','fulfilled or rejected (permanent)','completed only','failed only'],ans:1,diff:'easy',exp:'A Promise transitions from pending to either fulfilled (resolved) or rejected. This transition is permanent — cannot go back to pending.'},
+{q:'Closure: inner function retains access to:',opts:['Global scope only','Its own local scope only','Outer scope variables after outer function returns','Nothing after return'],ans:2,diff:'medium',exp:'Closure: inner function captures variables from outer scope. Even after outer function returns, inner function can still access and modify those captured variables.'},
+{q:'Nullish coalescing ?? vs OR || difference:',opts:['No difference','?? triggers on null/undefined only; || triggers on any falsy value','|| is newer','?? only works with objects'],ans:1,diff:'medium',exp:'"??" returns right side only when left is null or undefined. "||" returns right side for ANY falsy value (0, "", false, null, undefined). Use ?? for default values where 0 or "" is valid.'},
+{q:'jQuery AJAX POST to ASP.NET MVC requires which token in headers?',opts:['Authorization','X-Api-Key','RequestVerificationToken','X-Session-Id'],ans:2,diff:'medium',exp:'ASP.NET MVC anti-forgery requires the RequestVerificationToken. Read it from the hidden form field and pass in AJAX headers to prevent CSRF attacks.'}
+]},
+
+{id:'htmlcss',name:'HTML5 & CSS',col:'#7EB8FF',
+concepts:[
+{name:'Semantic HTML5, Forms & CSS Box Model',tag:'core',
+txt:`<strong>Semantic tags</strong>: &lt;header&gt;, &lt;nav&gt;, &lt;main&gt;, &lt;section&gt;, &lt;article&gt;, &lt;aside&gt;, &lt;footer&gt; — meaning for SEO + accessibility.<br>
+<strong>New input types</strong>: email, tel, number, date, range, color, search, url.<br>
+<strong>data-* attributes</strong>: store custom data on elements, accessible via <code>element.dataset.name</code>.<br>
+<strong>Box Model</strong>: content → padding → border → margin.<br>
+<strong>box-sizing: border-box</strong>: padding + border INCLUDED in width. Use universally!`,
+code:`<!-- Semantic HTML5 -->
+<main>
+  <section id="orders">
+    <article class="order" data-id="42" data-status="active">
+      <h2>Order #42</h2>
+    </article>
+  </section>
+</main>
+
+<!-- HTML5 form validation -->
+<form>
+  <input type="email" required placeholder="Email">
+  <input type="number" min="18" max="120" placeholder="Age">
+  <input type="date" id="dob">
+</form>
+
+/* Box model — use border-box universally */
+* { box-sizing: border-box; }
+.card { width: 300px; padding: 20px; border: 1px solid #ccc; margin: 10px; }
+/* Width = 300px total INCLUDING padding and border */`},
+{name:'Flexbox, Grid & Responsive Design',tag:'core',
+txt:`<strong>Flexbox</strong>: 1D layout (row OR column). <code>justify-content</code> = main axis. <code>align-items</code> = cross axis.<br>
+<strong>Grid</strong>: 2D layout (rows AND columns). More powerful for page layouts.<br>
+<strong>Media query</strong>: responsive breakpoints. Mobile-first: base styles for mobile, add breakpoints for larger screens.<br>
+<strong>CSS variables</strong>: <code>--primary: #7EFFA0;</code> then <code>background: var(--primary);</code>`,
+code:`/* Flexbox */
+.container {
+    display: flex;
+    justify-content: space-between; /* main axis alignment */
+    align-items: center;            /* cross axis alignment */
+    flex-wrap: wrap; gap: 16px;
+}
+.item { flex: 1 1 200px; } /* grow, shrink, basis */
+
+/* Grid — auto-responsive columns */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+/* CSS variables */
+:root { --primary: #7EFFA0; --bg: #080810; }
+.btn { background: var(--primary); color: #000; }
+
+/* Media query — mobile first */
+@media (max-width: 768px) {
+    .sidebar { display: none; }
+    .container { flex-direction: column; }
+}`}
+],
+tests:[
+{q:'box-sizing: border-box means width includes:',opts:['Margin','Padding and border (not margin)','Content only','Everything including margin'],ans:1,diff:'easy',exp:'border-box includes content + padding + border in the width. Without it (content-box default), padding and border are ADDED to width, making layout calculation harder.'},
+{q:'Flexbox: justify-content aligns on which axis?',opts:['Cross axis (perpendicular)','Main axis (flex-direction)','Z-axis','Grid axis'],ans:1,diff:'medium',exp:'justify-content aligns items along the main axis (horizontal for row, vertical for column). align-items controls the cross axis (perpendicular to main axis).'},
+{q:'CSS Grid vs Flexbox: main difference?',opts:['Grid is older','Flexbox is 2D; Grid is 1D','Flexbox is 1D (row OR column); Grid is 2D (rows AND columns)','Grid only works in Chrome'],ans:2,diff:'medium',exp:'Flexbox is one-dimensional — controls layout along either a row or column. Grid is two-dimensional — controls both rows and columns simultaneously.'},
+{q:'HTML5 data-* attributes are accessed in JS via:',opts:['getAttribute("data-x")','element.data.x','element.dataset.x','element.custom.x'],ans:2,diff:'easy',exp:'data-* attributes are accessed via element.dataset.attributeName (camelCase). For data-user-id, use element.dataset.userId.'},
+{q:'Which HTML5 tag wraps the primary content of a page?',opts:['<content>','<body>','<main>','<section>'],ans:2,diff:'easy',exp:'<main> represents the dominant content of the document body. There should be only one <main> per page. It helps screen readers and SEO identify the primary content.'}
+]},
+
+{id:'agile',name:'Agile, Scrum & Interview Tips',col:'#C47EFF',
+concepts:[
+{name:'Agile Principles & Scrum Ceremonies',tag:'core',
+txt:`<strong>Agile</strong>: iterative delivery, working software over documentation, respond to change over following a plan.<br>
+<strong>Scrum Roles</strong>: Product Owner (backlog priority) | Scrum Master (removes blockers) | Development Team.<br>
+<strong>Ceremonies</strong>: Sprint Planning | Daily Standup (15 min) | Sprint Review | Sprint Retrospective.<br>
+<strong>Artifacts</strong>: Product Backlog | Sprint Backlog | Increment.<br>
+<strong>Story Points</strong>: relative complexity (Fibonacci: 1,2,3,5,8,13,21). NOT hours!<br>
+<strong>Velocity</strong>: average story points completed per sprint. Used for capacity planning.`,
+code:`// Daily Standup — 3 questions:
+// 1. What did I do yesterday?
+// 2. What will I do today?
+// 3. Any blockers?
+
+// User Story format:
+// "As a [user], I want [goal] so that [benefit]"
+// Acceptance Criteria: Given/When/Then (BDD style)
+
+// Sprint Retrospective — 3 questions:
+// What went WELL?
+// What to IMPROVE?
+// What ACTIONS will we take?
+
+// Story Point estimation (Planning Poker)
+// 1 = trivial  |  3 = small  |  5 = medium
+// 8 = large    | 13 = very large (consider splitting)`},
+{name:'STAR Method & Interview Preparation',tag:'core',
+txt:`<strong>STAR Method</strong>: Situation → Task → <strong>Action (most important!)</strong> → Result.<br>
+<strong>Prepare these stories from your TCS/Novac experience</strong>:
+<ul class="bl">
+<li>TCS AI Fridays Hackathon — runner-up. Describe the innovative idea.</li>
+<li>Agentic AI prototype for client demo — recognised by project leadership.</li>
+<li>NBFC zero-defect go-lives at Novac — dual ownership dev + DBA.</li>
+<li>Checkmarx CWE-22 Path Traversal fix — root cause + fix + unit tests.</li>
+<li>DAST integer overflow on SubmitAuthUpdate — recursive validation + change order process.</li>
+<li>Vault double-invocation bug (LDKey null) — root cause analysis + constructor fix.</li>
+</ul>`,
+code:`// Prepare answers for these common questions:
+
+// "Tell me about yourself"
+// 4+ years .NET | FinTech (Novac/NBFC) → Healthcare (TCS/Humana)
+// Strength: backend .NET, security remediations, CI/CD, Agile delivery
+
+// "Biggest technical challenge?"
+// STAR: DAST integer overflow on SubmitAuthUpdate endpoint
+// Action: Recursive validation, checked{} blocks, unit tests, change order
+
+// "Describe a complex technical decision"
+// STAR: Vault + LaunchDarkly null LDKey at startup
+// Root cause: double-invocation of LoadConfiguration
+// Fix: load once in Startup constructor, store in private field
+
+// "Innovation or leadership?"
+// Agentic AI prototype for client demo — TCS Hackathon runner-up
+
+// GOOD questions to ask interviewer:
+// "What does success look like in the first 90 days?"
+// "What is the team's current tech stack migration roadmap?"
+// "How does the team handle production incidents?"`}
+],
+tests:[
+{q:'In Scrum, who owns and prioritizes the Product Backlog?',opts:['Scrum Master','Development Team','Product Owner','Project Manager'],ans:2,diff:'easy',exp:'The Product Owner owns and prioritizes the Product Backlog. They represent stakeholder interests and decide what gets built and in what order.'},
+{q:'Daily Standup should last:',opts:['60 minutes','30 minutes','15 minutes','5 minutes'],ans:2,diff:'easy',exp:'Daily Standup is time-boxed to 15 minutes. Three questions: what did I do, what will I do, any blockers. It is a synchronization meeting, not a detailed status report.'},
+{q:'Story Points measure:',opts:['Time in hours','Lines of code','Relative complexity/effort','Team size needed'],ans:2,diff:'easy',exp:'Story Points measure relative complexity and effort — not time. Teams estimate complexity relative to each other using Fibonacci scale, reducing absolute time estimation bias.'},
+{q:'Sprint Retrospective purpose:',opts:['Demo features to stakeholders','Plan next sprint backlog','Reflect on process — what went well/improve + actions','Estimate story points'],ans:2,diff:'easy',exp:'Retrospective is a ceremony for the team to inspect their process and plan improvements. What went well? What to improve? What actions will we take?'},
+{q:'STAR method: what does "A" (Action) emphasize?',opts:['Assumption','Your specific action/contribution','Analysis only','Agreement with team'],ans:1,diff:'easy',exp:'Action is what YOU specifically did — not what the team did. Interviewers want to understand your individual contribution, decision-making, and impact.'},
+{q:'Which Agile value: "Working software over comprehensive documentation"?',opts:['Sprint velocity','One of the 4 Agile Manifesto values','Scrum rule','Story point definition'],ans:1,diff:'medium',exp:'The Agile Manifesto has 4 values. "Working software over comprehensive documentation" means delivering functional software is more important than extensive documentation.'},
+{q:'Velocity in Scrum means:',opts:['Speed of each developer','Average story points completed per sprint','Number of bugs fixed','Hours worked'],ans:1,diff:'easy',exp:'Velocity is the average number of story points a team completes per sprint. It is used to forecast how much work can fit in future sprints — not as a performance metric for individuals.'},
+{q:'In the STAR method for interviews, which part should take the most time?',opts:['Situation','Task','Action','Result'],ans:2,diff:'easy',exp:'Action should be the most detailed part — this is where you explain exactly what YOU did (decisions made, steps taken, technical choices). Situation and Task are brief context-setting.'}
+]}
+];
+
+// ─── STATE ───
+let CU=null,CP='dash',CT=null,TS=null,pinBuf='',selUid=null,tmrInt=null;
+const sk=(u,k)=>`p3_${u}_${k}`;
+const sg=(u,k,d)=>{try{const v=sessionStorage.getItem(sk(u,k));return v?JSON.parse(v):d}catch{return d}};
+const ss=(u,k,v)=>{try{sessionStorage.setItem(sk(u,k),JSON.stringify(v))}catch{}};
+const gP=u=>sg(u,'p',{});const sP=(u,p)=>ss(u,'p',p);
+const gH=u=>sg(u,'h',[]);const aH=(u,r)=>{const h=gH(u);h.unshift(r);if(h.length>50)h.pop();ss(u,'h',h)};
+function initLogin(){document.getElementById('urow').innerHTML=USERS.map(u=>{const p=gP(u.id),done=Object.values(p).filter(x=>x.a>0).length,pct=Math.round(done/TOPICS.length*100);return`<div class="ucard" id="uc-${u.id}" onclick="pickU('${u.id}')" style="--col:${u.col}"><div class="uav">${u.init}</div><div class="unm">${u.name}</div><div class="url">${u.role}</div><div class="upb" style="width:${pct}%"></div></div>`;}).join('');document.getElementById('pinp').innerHTML=[...'123456789'].map(k=>`<button class="pk" onclick="pk('${k}')">${k}</button>`).join('')+`<button class="pk" onclick="pk('del')">⌫</button><button class="pk" onclick="pk('0')">0</button><button class="pk" onclick="pk('ok')">✓</button>`;}
+function pickU(uid){selUid=uid;pinBuf='';document.querySelectorAll('.ucard').forEach(c=>c.classList.remove('sel'));document.getElementById('uc-'+uid).classList.add('sel');const u=USERS.find(x=>x.id===uid);document.getElementById('pinl').textContent=`PIN for ${u.name}`;document.getElementById('pine').textContent='';document.getElementById('pinw').classList.add('show');doDots();}
+function doDots(){document.getElementById('pind').innerHTML=Array.from({length:4},(_,i)=>`<div class="pdot ${i<pinBuf.length?'on':''}"></div>`).join('');}
+function pk(k){if(!selUid)return;document.getElementById('pine').textContent='';if(k==='del'){pinBuf=pinBuf.slice(0,-1);doDots();return}if(k==='ok'){verP();return}if(pinBuf.length<4){pinBuf+=k;doDots()}if(pinBuf.length===4)setTimeout(verP,150);}
+function verP(){const u=USERS.find(x=>x.id===selUid);if(pinBuf===u.pin){CU=u;document.getElementById('login').style.display='none';document.getElementById('app').style.display='flex';const av=document.getElementById('hav');av.style.cssText=`background:color-mix(in srgb,${u.col} 15%,transparent);color:${u.col};border:1px solid ${u.col}`;av.textContent=u.init;document.getElementById('hnm').textContent=u.name;buildSB();goTo('dash');}else{pinBuf='';doDots();document.getElementById('pine').textContent='Incorrect PIN. Try again.';}}
+function logout(){CU=null;CT=null;TS=null;selUid=null;pinBuf='';clearInterval(tmrInt);document.getElementById('app').style.display='none';document.getElementById('login').style.display='flex';document.getElementById('pinw').classList.remove('show');initLogin();}
+function buildSB(f=''){const p=gP(CU.id),fl=TOPICS.filter(t=>!f||t.name.toLowerCase().includes(f.toLowerCase()));document.getElementById('sbsc').innerHTML=`<div class="sbsec">Overview</div><div class="ni ${CP==='dash'?'active':''}" onclick="goTo('dash')" style="--col:var(--c5)"><span class="nd"></span>Dashboard</div><div class="sbsec">Part 3 Topics</div>`+fl.map(t=>{const tp=p[t.id],d=tp&&tp.a>0;return`<div class="ni ${CP==='topic'&&CT?.id===t.id?'active':''}${d?' done':''}" onclick="goTo('topic','${t.id}')" style="--col:${t.col}"><span class="nd"></span><span style="flex:1;font-size:12px;line-height:1.3">${t.name}</span>${d?`<span class="ns">${tp.b}%</span>`:''}</div>`;}).join('')+`<div class="sbsec">More</div><div class="ni ${CP==='hist'?'active':''}" onclick="goTo('hist')" style="--col:var(--c4)"><span class="nd"></span>Test History</div>`;}
+function fSB(v){buildSB(v)}
+function goTo(pg,tid){CP=pg;clearInterval(tmrInt);if(pg==='topic'){CT=TOPICS.find(t=>t.id===tid)}document.getElementById('hpg').textContent=pg==='dash'?'Dashboard':pg==='topic'?CT.name:pg==='test'?'Mock Test':pg==='results'?'Results':'History';buildSB(document.getElementById('sbs').value);const m=document.getElementById('main');if(pg==='dash')rDash(m);else if(pg==='topic')rTopic(m);else if(pg==='test')rTest(m);else if(pg==='results')rResults(m);else if(pg==='hist')rHist(m);m.scrollTop=0;}
+function hl(c){return c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/(\/\/[^\n]*)/g,'<span class="cmt">$1</span>').replace(/(#[^\n]*)/g,'<span class="cmt">$1</span>').replace(/\b(public|private|protected|internal|static|abstract|sealed|virtual|override|new|partial|readonly|const|var|dynamic|using|namespace|class|interface|struct|enum|record|async|await|Task|return|if|else|for|foreach|while|try|catch|finally|throw|null|true|false|void|string|int|bool|decimal|double|float|long|char|object|base|this|where|get|set|init)\b/g,'<span class="kw">$1</span>').replace(/("(?:[^"\\]|\\.)*")/g,'<span class="str">$1</span>').replace(/(`(?:[^`\\]|\\.)*`)/g,'<span class="str">$1</span>').replace(/\b(\d+(?:\.\d+)?[mMfFdD]?)\b/g,'<span class="num">$1</span>');}
+function rDash(m){const p=gP(CU.id);let att=0,bs=0,st=0;TOPICS.forEach(t=>{const tp=p[t.id];if(tp){att+=tp.a;bs+=tp.b;st++}});const avg=st?Math.round(bs/st):0,tq=TOPICS.reduce((a,t)=>a+t.tests.length,0);m.innerHTML=`<div class="dh"><h1>Hello, ${CU.name} 👋</h1><p style="color:var(--t2);font-size:13px;margin-top:4px">Part 3 (Final) — ${TOPICS.length} topics · ${tq} mock questions</p></div><div class="sgrid"><div class="sbox"><div class="sv" style="color:var(--c5)">${st}/${TOPICS.length}</div><div class="sl">Topics started</div></div><div class="sbox"><div class="sv" style="color:var(--c3)">${att}</div><div class="sl">Tests taken</div></div><div class="sbox"><div class="sv" style="color:${avg>=70?'var(--c1)':avg>=50?'var(--c4)':'var(--danger)'}">${avg}%</div><div class="sl">Avg best score</div></div><div class="sbox"><div class="sv" style="color:var(--c4)">${TOPICS.length-st}</div><div class="sl">Remaining</div></div></div><div class="sec">Topics in Part 3</div><div class="pgrid">${TOPICS.map(t=>{const tp=p[t.id],pct=tp?tp.b:0,at=tp?tp.a:0;return`<div class="pt" onclick="goTo('topic','${t.id}')" style="--col:${t.col}"><div class="ptt"><span class="ptd"></span><span class="ptn">${t.name}</span><span class="ptc">${t.tests.length}Q</span></div><div class="pbb"><div class="pbf" style="width:${pct}%"></div></div><div class="ppc">${pct>0?pct+'% best · '+at+' test'+(at>1?'s':''):'Not started'}</div></div>`;}).join('')}</div><div class="sec">Navigate to other parts</div><div style="display:flex;gap:10px;flex-wrap:wrap"><a href="part1.html" style="display:inline-flex;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px 18px;text-decoration:none;color:var(--t1);font-size:13px">← Part 1 · C# · Collections · MVC</a><a href="part2.html" style="display:inline-flex;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px 18px;text-decoration:none;color:var(--t1);font-size:13px">← Part 2 · EF · SQL · SOLID · Git</a></div><div style="background:var(--s1);border:1px solid rgba(126,255,160,.2);border-radius:12px;padding:16px;margin-top:20px"><div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--c1);margin-bottom:8px">🎯 Interview Day Checklist</div><div style="font-size:13px;color:var(--t2);line-height:1.8">✓ C# OOP, collections, LINQ (Part 1)<br>✓ EF Core, SQL joins + window functions (Part 2)<br>✓ SOLID principles, design patterns (Part 2)<br>✓ Unit testing with xUnit + Moq (Part 3)<br>✓ Security: CWE-22, DAST, Checkmarx experience (Part 3)<br>✓ 4 STAR stories ready (Hackathon · AI prototype · NBFC go-lives · Vault fix)<br>✓ Question to ask: "What does success look like in 90 days?"</div></div>`;}
+function rTopic(m){const t=CT,p=gP(CU.id),tp=p[t.id];m.innerHTML=`<div class="tban" style="--col:${t.col}"><div class="btop"><div><div class="btt">${t.name}</div><div class="bts">${t.concepts.length} concepts · ${t.tests.length} questions${tp?` · Best: ${tp.b}%`:''}</div></div><button class="stbtn" style="background:${t.col}" onclick="startTest()">Mock Test →</button></div><div class="bcs"><span class="chip cc">Core</span><span class="chip cs">Senior</span><span class="chip ca">Advanced</span></div></div><div class="sec">Concepts (${t.concepts.length})</div><div class="clist">${t.concepts.map((c,i)=>`<div class="cx"><div class="cxh" onclick="tCC(${i})" style="--col:${t.col}"><span class="ctag chip ${c.tag==='core'?'cc':c.tag==='senior'?'cs':'ca'}">${c.tag}</span><span class="cnm">${c.name}</span><span class="carr" id="ca${i}">›</span></div><div class="cxb" id="cb${i}"><div class="ctx">${c.txt}</div>${c.code?`<pre class="cb">${hl(c.code)}</pre>`:''}</div></div>`).join('')}</div><div style="text-align:center;padding:16px 0 40px"><button class="stbtn" style="background:${t.col};font-size:15px;padding:14px 32px" onclick="startTest()">Start ${t.tests.length}-question Mock Test →</button></div>`;}
+function tCC(i){const b=document.getElementById('cb'+i),a=document.getElementById('ca'+i);const o=b.classList.toggle('open');a.classList.toggle('open',o);}
+function startTest(){TS={topic:CT,qs:[...CT.tests],cur:0,ans:Array(CT.tests.length).fill(null),rev:Array(CT.tests.length).fill(false),t0:Date.now(),tLeft:CT.tests.length*60,done:false};goTo('test');startTmr();}
+function startTmr(){clearInterval(tmrInt);tmrInt=setInterval(()=>{if(!TS||TS.done){clearInterval(tmrInt);return}TS.tLeft--;const el=document.getElementById('ttmr');if(el){const mn=Math.floor(TS.tLeft/60),sc=TS.tLeft%60;el.textContent=`${mn}:${String(sc).padStart(2,'0')}`;el.className='tmr'+(TS.tLeft<60?' danger':TS.tLeft<120?' warn':'');}if(TS.tLeft<=0)finTest();},1000);}
+function rTest(m){if(!TS)return;const q=TS.qs[TS.cur],mn=Math.floor(TS.tLeft/60),sc=TS.tLeft%60;const qpr=TS.qs.map((_,i)=>{let cl='';if(i===TS.cur)cl='cur';else if(TS.rev[i])cl=TS.ans[i]===TS.qs[i].ans?'ok':'bad';else if(TS.ans[i]!==null)cl='ans';return`<div class="qp ${cl}" onclick="goQ(${i})">${i+1}</div>`;}).join('');const opts=q.opts.map((o,i)=>{let cl='';if(TS.rev[TS.cur]){if(i===q.ans)cl='correct';else if(i===TS.ans[TS.cur]&&i!==q.ans)cl='wrong';}else if(i===TS.ans[TS.cur])cl='sel';return`<div class="opt ${cl}${TS.rev[TS.cur]?' locked':''}" onclick="selO(${i})"><span class="ol">${'ABCD'[i]}</span>${o}</div>`;}).join('');m.innerHTML=`<div class="tsh"><div class="ttop"><div class="ti"><h2>${TS.topic.name} — Mock Test</h2><p>Q${TS.cur+1} of ${TS.qs.length} · <span class="qdiff qd${(q.diff||'easy')[0]}">${q.diff||'easy'}</span></p></div><div class="tmr" id="ttmr">${mn}:${String(sc).padStart(2,'0')}</div></div><div class="qpr">${qpr}</div><div class="qcard"><div class="qnum">Question ${TS.cur+1}</div><div class="qtx">${q.q}</div>${q.code?`<pre class="qco">${hl(q.code)}</pre>`:''}<div class="opts">${opts}</div><div class="expl ${TS.rev[TS.cur]?'show':''}" id="expl">💡 ${q.exp}</div></div><div class="tnav">${TS.cur>0?`<button class="btn" onclick="goQ(${TS.cur-1})">← Prev</button>`:''}${TS.ans[TS.cur]!==null&&!TS.rev[TS.cur]?`<button class="btn btnw" onclick="revO()">Show Answer</button>`:''}${TS.cur<TS.qs.length-1?`<button class="btn btnp" onclick="goQ(${TS.cur+1})">Next →</button>`:`<button class="btn btnp" onclick="finTest()">Finish ✓</button>`}</div></div>`;}
+function selO(i){if(TS.rev[TS.cur])return;TS.ans[TS.cur]=i;rTest(document.getElementById('main'))}
+function revO(){TS.rev[TS.cur]=true;rTest(document.getElementById('main'))}
+function goQ(i){TS.cur=i;rTest(document.getElementById('main'))}
+function finTest(){clearInterval(tmrInt);TS.done=true;const ok=TS.ans.filter((a,i)=>a===TS.qs[i].ans).length;const score=Math.round(ok/TS.qs.length*100);const taken=Math.round((Date.now()-TS.t0)/1000);TS.score=score;TS.ok=ok;TS.taken=taken;const p=gP(CU.id),ex=p[TS.topic.id];p[TS.topic.id]={a:(ex?.a||0)+1,b:Math.max(ex?.b||0,score),l:score};sP(CU.id,p);aH(CU.id,{t:TS.topic.name,tid:TS.topic.id,s:score,ok,total:TS.qs.length,taken,d:new Date().toLocaleDateString('en-IN')});goTo('results');}
+function rResults(m){if(!TS)return;const{score,ok,taken,qs,ans}=TS;const gr=score>=80?'A':score>=60?'B':'C';const gm=score>=80?'Interview-ready! 🎯':score>=60?'Good — review weak areas 📖':'Keep practising 💪';m.innerHTML=`<div class="rh"><div class="rsc" style="color:${score>=80?'var(--c1)':score>=60?'var(--c4)':'var(--danger)'}">${score}%</div><div class="rlb">${TS.topic.name}</div><div class="rgr gr${gr.toLowerCase()}">${gr} · ${gm}</div><div class="rst"><div class="rs"><strong>${ok}</strong>Correct</div><div class="rs"><strong>${qs.length-ok}</strong>Wrong</div><div class="rs"><strong>${taken}s</strong>Time</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px"><button class="btn btnp" onclick="startTest()">Retry Test</button><button class="btn" onclick="goTo('topic','${TS.topic.id}')">← Review Concepts</button><button class="btn" onclick="goTo('dash')">Dashboard</button></div><div class="sec">Full Review</div>${qs.map((q,i)=>{const ua=ans[i],isOk=ua===q.ans;return`<div class="ri"><div class="riq">${i+1}. ${q.q}</div>${ua!==null?`<div class="ria ${isOk?'rok':'rbd'}">${isOk?'✓':'✗'} Your answer: ${q.opts[ua]}</div>`:'<div class="ria" style="color:var(--t3)">— Not answered</div>'}${!isOk?`<div class="ria rok">✓ Correct: ${q.opts[q.ans]}</div>`:''}
+<div class="rex">💡 ${q.exp}</div></div>`;}).join('')}`;}
+function rHist(m){const h=gH(CU.id);if(!h.length){m.innerHTML='<div class="empty"><div style="font-size:40px;margin-bottom:12px">📝</div><p>No tests taken yet.</p></div>';return}m.innerHTML=`<div class="sec">Test History (${h.length})</div>`+h.map(r=>`<div class="hr2"><div style="flex:1"><div class="ht">${r.t}</div><div class="hd">${r.d} · ${r.taken}s</div></div><div class="hsc" style="color:${r.s>=80?'var(--c1)':r.s>=60?'var(--c4)':'var(--danger)'}">${r.s}%</div><div style="font-size:12px;color:var(--t3)">${r.ok}/${r.total}</div><button class="btn" style="font-size:11px;padding:5px 12px" onclick="goTo('topic','${r.tid}')">Study</button></div>`).join('');}
+initLogin();
+</script>
+</body>
+</html>

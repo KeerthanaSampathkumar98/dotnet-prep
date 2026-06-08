@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>.NET Interview Prep — Part 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#080810;--s1:#0f0f1a;--s2:#161625;--s3:#1e1e30;--s4:#252538;--c1:#7EFFA0;--c2:#FF7EB3;--c3:#7EB8FF;--c4:#FFD07E;--c5:#C47EFF;--t1:#f2f2ff;--t2:#a0a0c0;--t3:#5a5a80;--bd:#2a2a45;--danger:#ff6b6b;--warn:#ffd07e;}
+html,body{height:100%;overflow:hidden;font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--t1);font-size:14px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--s4);border-radius:2px}
+#login{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--bg);background-image:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(255,208,126,.06),transparent 60%),radial-gradient(ellipse 50% 60% at 80% 80%,rgba(196,126,255,.05),transparent 60%)}
+.lchip{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--c4);border:1px solid rgba(255,208,126,.25);border-radius:20px;padding:4px 14px;margin-bottom:14px;background:rgba(255,208,126,.05)}
+.lh{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:8px;text-align:center}
+.lh em{color:var(--c4);font-style:normal}
+.lsub{color:var(--t2);font-size:13px;margin-bottom:10px;text-align:center}
+.lnav{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;justify-content:center}
+.lnav a{font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 14px;border-radius:20px;border:1px solid var(--bd);color:var(--t3);text-decoration:none;transition:.15s}
+.lnav a:hover{border-color:var(--c3);color:var(--c3)}
+.lnav a.curr{border-color:var(--c4);color:var(--c4);background:rgba(255,208,126,.08)}
+.urow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;max-width:720px}
+.ucard{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px 14px;text-align:center;cursor:pointer;width:128px;transition:all .2s;position:relative;overflow:hidden}
+.ucard:hover{transform:translateY(-3px);border-color:var(--col)}
+.ucard.sel{border-color:var(--col);background:color-mix(in srgb,var(--col) 8%,transparent)}
+.uav{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin:0 auto 10px;border:2px solid var(--col);background:color-mix(in srgb,var(--col) 15%,transparent);color:var(--col)}
+.unm{font-size:13px;font-weight:600;margin-bottom:2px}
+.url{font-size:11px;color:var(--t3)}
+.upb{position:absolute;bottom:0;left:0;height:2px;transition:width .4s;background:var(--col)}
+.pinw{display:none;width:100%;max-width:300px;text-align:center}
+.pinw.show{display:block}
+.pinl{font-size:13px;color:var(--t2);margin-bottom:14px}
+.pind{display:flex;justify-content:center;gap:12px;margin-bottom:20px}
+.pdot{width:12px;height:12px;border-radius:50%;border:2px solid var(--bd);transition:.15s}
+.pdot.on{border-color:var(--c4);background:var(--c4)}
+.pinp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:220px;margin:0 auto}
+.pk{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:13px;font-size:17px;font-family:'JetBrains Mono',monospace;color:var(--t1);transition:all .12s;cursor:pointer}
+.pk:hover{background:var(--s3);border-color:var(--c3)}
+.pk:active{transform:scale(.94)}
+.pine{color:var(--danger);font-size:12px;margin-top:10px;min-height:16px;font-family:'JetBrains Mono',monospace}
+#app{display:none;flex-direction:column;height:100vh}
+.topbar{height:52px;min-height:52px;background:var(--s1);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:50}
+.tlogo{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--c4)}
+.tsep{width:1px;height:20px;background:var(--bd)}
+.tpart{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--c4);letter-spacing:.08em}
+.tnav{display:flex;gap:6px;margin-left:8px}
+.tnav a{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid var(--bd);color:var(--t3);text-decoration:none;transition:.15s}
+.tnav a:hover{border-color:var(--c3);color:var(--c3)}
+.tr{margin-left:auto;display:flex;align-items:center;gap:10px}
+.tav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700}
+.tnm{font-size:13px;font-weight:500}
+.outbtn{background:none;border:1px solid var(--bd);border-radius:7px;padding:4px 12px;font-size:12px;color:var(--t3);cursor:pointer;transition:.15s}
+.outbtn:hover{border-color:var(--danger);color:var(--danger)}
+.ab{display:flex;flex:1;min-height:0;overflow:hidden}
+.sb{width:230px;min-width:230px;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.sbsi{padding:10px 10px 0}
+.sbsi input{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:7px 10px;font-size:12px;font-family:'Instrument Sans',sans-serif;color:var(--t1);outline:none}
+.sbsi input:focus{border-color:var(--c4)}
+.sbsi input::placeholder{color:var(--t3)}
+.sbsc{overflow-y:auto;flex:1;padding:6px 8px 12px}
+.sbsec{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--t3);text-transform:uppercase;padding:12px 8px 6px}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--t2);transition:all .12s;margin-bottom:1px;font-size:12.5px;border:1px solid transparent}
+.ni:hover{background:var(--s2);color:var(--t1)}
+.ni.active{background:color-mix(in srgb,var(--col,var(--c4)) 12%,transparent);color:var(--col,var(--c4));border-color:color-mix(in srgb,var(--col,var(--c4)) 25%,transparent)}
+.nd{width:6px;height:6px;border-radius:50%;background:var(--bd);flex-shrink:0}
+.ni.active .nd,.ni.done .nd{background:var(--col,var(--c4))}
+.ns{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;background:var(--s3);border-radius:20px;padding:1px 7px}
+.main{flex:1;overflow-y:auto;padding:24px;background:var(--bg)}
+.dh h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:16px 0 24px}
+.sbox{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.sv{font-family:'Syne',sans-serif;font-size:30px;font-weight:800;margin-bottom:2px}
+.sl{font-size:11px;color:var(--t3)}
+.sec{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--t3);text-transform:uppercase;margin:20px 0 10px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px}
+.pt{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .18s}
+.pt:hover{border-color:var(--col);transform:translateY(-1px)}
+.ptt{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ptd{width:8px;height:8px;border-radius:50%;background:var(--col);flex-shrink:0}
+.ptn{font-size:13px;font-weight:500;flex:1}
+.ptc{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3)}
+.pbb{height:4px;background:var(--s3);border-radius:2px;overflow:hidden}
+.pbf{height:100%;border-radius:2px;transition:width .5s;background:var(--col)}
+.ppc{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);margin-top:5px}
+.tban{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:20px 24px;margin-bottom:20px;background-image:radial-gradient(ellipse 50% 80% at 90% 50%,color-mix(in srgb,var(--col) 8%,transparent),transparent 60%)}
+.btop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.btt{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.02em;color:var(--col)}
+.bts{font-size:13px;color:var(--t2);margin-top:4px}
+.bcs{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid;letter-spacing:.04em}
+.cc{border-color:rgba(126,255,160,.3);color:var(--c1);background:rgba(126,255,160,.06)}
+.cs{border-color:rgba(255,208,126,.3);color:var(--c4);background:rgba(255,208,126,.06)}
+.ca{border-color:rgba(196,126,255,.3);color:var(--c5);background:rgba(196,126,255,.06)}
+.stbtn{background:var(--col);color:#000;border:none;border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap}
+.stbtn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.clist{display:flex;flex-direction:column;gap:6px;margin-bottom:24px}
+.cx{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden}
+.cxh{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;transition:.12s;user-select:none}
+.cxh:hover{background:var(--s2)}
+.ctag{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;border:1px solid;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0}
+.cnm{font-size:13px;font-weight:500;flex:1}
+.carr{color:var(--t3);font-size:14px;transition:transform .2s;flex-shrink:0}
+.carr.open{transform:rotate(90deg)}
+.cxb{display:none;padding:0 16px 16px;border-top:1px solid var(--bd)}
+.cxb.open{display:block}
+.ctx{font-size:13px;line-height:1.8;color:var(--t2);margin-top:12px}
+.ctx strong{color:var(--t1);font-weight:600}
+.ctx code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--s3);padding:1px 5px;border-radius:4px;color:var(--c3)}
+pre.cb{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.75;overflow-x:auto;margin:10px 0;white-space:pre;color:#c9d1d9}
+.kw{color:#ff7eb3}.str{color:#ffd07e}.cmt{color:#4b5563}.num{color:#f8a04b}
+.dftab{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+.dftab th{background:var(--s3);padding:7px 10px;text-align:left;color:var(--t1);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:11px}
+.dftab td{padding:7px 10px;border-top:1px solid var(--bd);color:var(--t2);vertical-align:top;font-size:12px}
+.dftab tr:hover td{background:var(--s2)}
+.bl{list-style:none;margin:6px 0}
+.bl li{padding:3px 0 3px 16px;position:relative;color:var(--t2);font-size:13px;line-height:1.7}
+.bl li::before{content:'›';position:absolute;left:0;color:var(--col,var(--c4));font-weight:700}
+.tsh{max-width:820px}
+.ttop{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.ti h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:700}
+.ti p{font-size:12px;color:var(--t2);margin-top:2px}
+.tmr{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:8px 16px;color:var(--c4)}
+.tmr.warn{color:var(--warn)}.tmr.danger{color:var(--danger);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.qpr{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px}
+.qp{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;background:var(--s2);border:1px solid var(--bd);color:var(--t3);transition:.15s}
+.qp.cur{background:var(--c4);color:#000;border-color:var(--c4);font-weight:700}
+.qp.ans{background:rgba(126,184,255,.15);border-color:var(--c3);color:var(--c3)}
+.qp.ok{background:rgba(126,255,160,.15);border-color:var(--c1);color:var(--c1)}
+.qp.bad{background:rgba(255,107,107,.15);border-color:var(--danger);color:var(--danger)}
+.qcard{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:22px;margin-bottom:12px}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.qdiff{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;border:1px solid}
+.qde{border-color:rgba(126,255,160,.3);color:var(--c1)}.qdm{border-color:rgba(255,208,126,.3);color:var(--c4)}.qdh{border-color:rgba(255,126,179,.3);color:var(--c2)}
+.qtx{font-size:15px;font-weight:500;line-height:1.65;margin-bottom:16px}
+.qco{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.7;margin-bottom:14px;overflow-x:auto;white-space:pre;color:#c9d1d9}
+.opts{display:grid;gap:8px}
+.opt{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px 16px;cursor:pointer;font-size:13px;transition:all .12s;display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.opt:hover:not(.locked){border-color:var(--c3);background:rgba(126,184,255,.05)}
+.opt.sel{border-color:var(--c3);background:rgba(126,184,255,.08)}
+.opt.correct{border-color:var(--c1);background:rgba(126,255,160,.08);color:var(--c1)}
+.opt.wrong{border-color:var(--danger);background:rgba(255,107,107,.08);color:var(--danger)}
+.ol{font-family:'JetBrains Mono',monospace;font-size:10px;min-width:22px;height:22px;border-radius:5px;background:var(--s3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:.12s}
+.opt.sel .ol{background:var(--c3);color:#000}
+.opt.correct .ol{background:var(--c1);color:#000}
+.opt.wrong .ol{background:var(--danger);color:#fff}
+.expl{background:rgba(126,255,160,.05);border:1px solid rgba(126,255,160,.2);border-radius:8px;padding:12px 14px;margin-top:10px;font-size:13px;color:var(--c1);line-height:1.65;display:none}
+.expl.show{display:block}
+.tnav{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.btn{border-radius:8px;padding:9px 18px;font-size:13px;font-weight:500;font-family:'Instrument Sans',sans-serif;border:1px solid var(--bd);background:var(--s2);color:var(--t1);cursor:pointer;transition:all .12s}
+.btn:hover{background:var(--s3)}
+.btnp{background:var(--c4);color:#000;border-color:var(--c4);font-weight:700}
+.btnp:hover{filter:brightness(1.08)}
+.btnw{border-color:var(--warn);color:var(--warn)}
+.rh{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:28px;text-align:center;margin-bottom:16px}
+.rsc{font-family:'Syne',sans-serif;font-size:72px;font-weight:800;letter-spacing:-.04em;margin-bottom:4px}
+.rlb{font-size:13px;color:var(--t2);margin-bottom:14px}
+.rgr{display:inline-block;padding:6px 20px;border-radius:20px;font-size:13px;font-weight:700;font-family:'Syne',sans-serif;margin-bottom:6px;border:1px solid}
+.gra{border-color:rgba(126,255,160,.4);color:var(--c1);background:rgba(126,255,160,.08)}
+.grb{border-color:rgba(255,208,126,.4);color:var(--c4);background:rgba(255,208,126,.08)}
+.grc{border-color:rgba(255,107,107,.4);color:var(--danger);background:rgba(255,107,107,.08)}
+.rst{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.rs{background:var(--s2);border-radius:10px;padding:12px;font-size:11px;color:var(--t3)}
+.rs strong{display:block;font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--t1);margin-bottom:1px}
+.ri{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:8px}
+.riq{font-size:14px;font-weight:500;line-height:1.5;margin-bottom:10px}
+.ria{font-size:12.5px;padding:7px 10px;border-radius:8px;margin-bottom:4px}
+.rok{background:rgba(126,255,160,.07);color:var(--c1)}
+.rbd{background:rgba(255,107,107,.07);color:var(--danger)}
+.rex{font-size:12px;color:var(--t3);margin-top:6px;line-height:1.65}
+.hr2{background:var(--s1);border:1px solid var(--bd);border-radius:10px;display:flex;align-items:center;gap:12px;padding:14px 16px;margin-bottom:8px;flex-wrap:wrap}
+.ht{font-size:13px;font-weight:500;flex:1;min-width:140px}
+.hd{font-size:11px;color:var(--t3)}
+.hsc{font-family:'Syne',sans-serif;font-size:24px;font-weight:800}
+.empty{text-align:center;padding:60px 20px;color:var(--t3)}
+</style>
+</head>
+<body>
+<div id="login">
+  <div class="lchip">⬡ .NET Interview Prep — Part 2 of 3</div>
+  <div class="lh">EF · SQL · <em>SOLID</em> · Git</div>
+  <div class="lsub">Entity Framework · SQL Server · SOLID & Patterns · Git & DevOps · 4 topics · 38 questions</div>
+  <div class="lnav">
+    <a href="part1.html">← Part 1</a>
+    <a class="curr" href="#">Part 2</a>
+    <a href="part3.html">Part 3 →</a>
+  </div>
+  <div class="urow" id="urow"></div>
+  <div class="pinw" id="pinw">
+    <div class="pinl" id="pinl">Enter PIN</div>
+    <div class="pind" id="pind"></div>
+    <div class="pinp" id="pinp"></div>
+    <div class="pine" id="pine"></div>
+  </div>
+</div>
+<div id="app">
+  <div class="topbar">
+    <div class="tlogo">// .NET PREP</div>
+    <div class="tsep"></div>
+    <span class="tpart">PART 2/3</span>
+    <div class="tnav">
+      <a href="part1.html">← Part 1</a>
+      <a href="part3.html">Part 3 →</a>
+    </div>
+    <span id="hpg" style="font-size:12px;color:var(--t3);margin-left:8px">Dashboard</span>
+    <div class="tr">
+      <div class="tav" id="hav"></div>
+      <span class="tnm" id="hnm"></span>
+      <button class="outbtn" onclick="logout()">Exit</button>
+    </div>
+  </div>
+  <div class="ab">
+    <div class="sb">
+      <div class="sbsi"><input type="text" placeholder="🔍 Search..." id="sbs" oninput="fSB(this.value)"></div>
+      <div class="sbsc" id="sbsc"></div>
+    </div>
+    <div class="main" id="main"></div>
+  </div>
+</div>
+<script>
+const USERS=[
+  {id:'u1',name:'Keerthana',role:'Senior Dev·TCS',pin:'1234',col:'#7EFFA0',init:'KS'},
+  {id:'u2',name:'Naveen',role:'Developer',pin:'2345',col:'#FF7EB3',init:'NV'},
+  {id:'u3',name:'Priya',role:'Developer',pin:'3456',col:'#7EB8FF',init:'PR'},
+  {id:'u4',name:'Arun',role:'Developer',pin:'4567',col:'#FFD07E',init:'AR'},
+  {id:'u5',name:'Deepa',role:'Developer',pin:'5678',col:'#C47EFF',init:'DP'}
+];
+const TOPICS=[
+{id:'ef',name:'Entity Framework Core',col:'#FFD07E',
+concepts:[
+{name:'DbContext, DbSet, Code First vs Database First',tag:'core',
+txt:`<strong>DbContext</strong>: unit of work — manages DB connection, change tracking, transactions.<br>
+<strong>DbSet&lt;T&gt;</strong>: represents a table. Provides LINQ + CRUD.<br>
+<strong>Code First</strong>: write C# classes → run migrations → EF creates DB schema.<br>
+<strong>Database First</strong>: existing DB → Scaffold-DbContext generates C# entity classes.<br>
+<strong>Fluent API</strong> (OnModelCreating): more powerful than DataAnnotations for complex mappings.<br>
+<strong>Migrations</strong>: <code>dotnet ef migrations add Name</code> | <code>dotnet ef database update</code>`,
+code:`public class AppDbContext : DbContext {
+    public AppDbContext(DbContextOptions<AppDbContext> o) : base(o) {}
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<Customer> Customers { get; set; }
+    protected override void OnModelCreating(ModelBuilder mb) {
+        mb.Entity<Order>(e => {
+            e.HasKey(o => o.Id);
+            e.Property(o => o.Amount).HasColumnType("decimal(18,2)");
+            e.HasOne(o => o.Customer).WithMany(c => c.Orders)
+             .HasForeignKey(o => o.CustomerId)
+             .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+}
+// Migration commands
+// dotnet ef migrations add InitialCreate
+// dotnet ef database update
+// dotnet ef migrations remove`},
+{name:'Eager, Lazy, Explicit Loading & N+1 Problem',tag:'core',
+txt:`<table class="dftab"><tr><th>Strategy</th><th>When Loaded</th><th>How</th><th>N+1 Risk</th></tr>
+<tr><td>Eager</td><td>Same JOIN query</td><td>Include()/ThenInclude()</td><td>No — best for lists</td></tr>
+<tr><td>Lazy</td><td>On nav property access</td><td>virtual + proxies</td><td>YES — be careful!</td></tr>
+<tr><td>Explicit</td><td>Manually on demand</td><td>Entry().Collection().Load()</td><td>Controlled</td></tr>
+</table>
+<strong>N+1 Problem</strong>: fetch 100 orders → access .Customer on each = 101 DB queries! Fix with <code>Include()</code>.<br>
+<strong>AsNoTracking()</strong>: for read-only queries — no change tracking snapshot. Faster!<br>
+<strong>FindAsync(id)</strong>: checks ChangeTracker cache first, then DB. <strong>FirstOrDefaultAsync()</strong>: always queries DB.`,
+code:`// EAGER — 1 SQL with JOIN ✅
+var orders = await ctx.Orders
+    .Include(o => o.Customer)
+    .Include(o => o.Items).ThenInclude(i => i.Product)
+    .Where(o => o.Status == "Pending")
+    .AsNoTracking()   // read-only: no tracking overhead
+    .ToListAsync();
+
+// LAZY — enable in options + virtual nav property
+// services.AddDbContext<AppDbContext>(o => o.UseLazyLoadingProxies());
+public class Order { public virtual Customer Customer { get; set; } }
+
+// EXPLICIT
+var order = await ctx.Orders.FindAsync(id);
+await ctx.Entry(order).Collection(o => o.Items).LoadAsync();
+await ctx.Entry(order).Reference(o => o.Customer).LoadAsync();`},
+{name:'CRUD, Change Tracking & Transactions',tag:'core',
+txt:`<strong>Change tracking states</strong>: Added, Modified, Deleted, Unchanged, Detached.<br>
+<strong>SaveChangesAsync()</strong>: detects all changed entities → generates SQL → commits transaction.<br>
+<strong>EF Core 7+</strong>: <code>ExecuteUpdateAsync()</code> / <code>ExecuteDeleteAsync()</code> for bulk ops without loading entities.<br>
+<strong>Transaction</strong>: <code>BeginTransactionAsync()</code> for multiple SaveChanges calls that must be atomic.`,
+code:`// CREATE
+ctx.Orders.Add(new Order { CustomerId=1, Amount=100m });
+await ctx.SaveChangesAsync();  // INSERT INTO Orders...
+
+// READ — AsNoTracking for read-only
+var o = await ctx.Orders.FindAsync(id);  // cache first, then DB
+
+// UPDATE — EF tracks the change
+o.Status = "Shipped";
+await ctx.SaveChangesAsync();  // UPDATE Orders SET Status=...
+
+// DELETE
+ctx.Orders.Remove(o);
+await ctx.SaveChangesAsync();  // DELETE FROM Orders WHERE Id=...
+
+// BULK (EF Core 7+)
+await ctx.Orders.Where(o => o.IsExpired).ExecuteDeleteAsync();
+
+// TRANSACTION
+using var tx = await ctx.Database.BeginTransactionAsync();
+try {
+    ctx.Orders.Add(newOrder);
+    await ctx.SaveChangesAsync();
+    await inventorySvc.DeductAsync(newOrder.Items);
+    await ctx.SaveChangesAsync();
+    await tx.CommitAsync();
+} catch { await tx.RollbackAsync(); throw; }`},
+{name:'Relationships: One-to-Many, Many-to-Many & Raw SQL',tag:'core',
+txt:`<strong>One-to-Many</strong>: FK on child, ICollection&lt;T&gt; nav on parent, Reference nav on child.<br>
+<strong>Many-to-Many (EF Core 5+)</strong>: two ICollection&lt;T&gt; navs → EF auto-creates join table.<br>
+<strong>FromSqlInterpolated</strong>: SAFE parameterized raw SQL. NEVER use <code>FromSqlRaw</code> with string concatenation!`,
+code:`// One-to-Many
+public class Customer {
+    public int Id { get; set; }
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
+}
+public class Order {
+    public int Id { get; set; }
+    public int CustomerId { get; set; }    // FK
+    public Customer Customer { get; set; } // nav property
+}
+
+// Many-to-Many (EF Core 5+ — auto join table)
+public class Student { public ICollection<Course> Courses { get; set; } = new(); }
+public class Course  { public ICollection<Student> Students { get; set; } = new(); }
+
+// Stored procedure — SAFE parameterization
+var dt = DateTime.UtcNow.AddDays(-30);
+var orders = await ctx.Orders
+    .FromSqlInterpolated($"EXEC GetRecentOrders {dt}") // ✅ parameterized
+    .ToListAsync();
+
+// Non-SELECT bulk
+await ctx.Database.ExecuteSqlRawAsync(
+    "UPDATE Products SET IsActive=0 WHERE ExpiresAt < {0}", DateTime.UtcNow);`}
+],
+tests:[
+{q:'Which EF Core method loads related data in a single SQL JOIN?',opts:['LazyLoad()','Select()','Include()/ThenInclude()','Load()'],ans:2,diff:'easy',exp:'Include() performs an INNER/LEFT JOIN in generated SQL. ThenInclude() loads nested relationships. Both in the same query — no N+1 problem.'},
+{q:'N+1: fetch 100 orders, access .Customer on each = how many queries?',opts:['1','101','100','200'],ans:1,diff:'medium',exp:'1 query for 100 orders + 1 query per order for Customer = 101 queries. Fix with .Include(o => o.Customer) to load all in one JOIN.'},
+{q:'AsNoTracking() is best used when:',opts:['Updating entities','Reading data NOT to be modified','Deleting entities','Inserting new records'],ans:1,diff:'easy',exp:'AsNoTracking() disables change tracking for read-only queries. No snapshot stored = less memory, faster performance.'},
+{q:'FindAsync(id) vs FirstOrDefaultAsync() — FindAsync advantage?',opts:['Faster SQL','Checks ChangeTracker cache first before DB query','Returns all matches','Works with joins'],ans:1,diff:'hard',exp:'FindAsync checks the local ChangeTracker cache first. If already tracked, returns WITHOUT a DB query. FirstOrDefaultAsync always issues SQL.'},
+{q:'SaveChangesAsync() does what?',opts:['Opens connection','Detects changed entities, generates SQL, commits transaction','Rolls back all changes','Clears DbContext'],ans:1,diff:'easy',exp:'SaveChangesAsync inspects ChangeTracker for Added/Modified/Deleted entities, generates INSERT/UPDATE/DELETE SQL, and commits all in one transaction.'},
+{q:'FromSqlInterpolated vs FromSqlRaw with concatenation:',opts:['Same performance','Interpolated auto-parameterizes, preventing SQL injection','Raw is safer','Interpolated is slower'],ans:1,diff:'medium',exp:'FromSqlInterpolated converts interpolated values to SQL parameters automatically. FromSqlRaw with string concatenation passes user input directly into SQL — injection risk!'},
+{q:'Code First means:',opts:['DB exists first, classes generated','C# classes first, DB created via migrations','Both together','No migrations needed'],ans:1,diff:'easy',exp:'Code First: write C# entity classes, run dotnet ef migrations add and dotnet ef database update to create/update the DB schema.'},
+{q:'EF Core 5+: two ICollection nav properties pointing to each other creates:',opts:['Two foreign keys','Automatic join table','Error','One-to-Many'],ans:1,diff:'medium',exp:'EF Core 5+ detects two ICollection nav properties pointing to each other and automatically creates a join table (e.g., StudentCourse) without extra code.'},
+{q:'Which EF Core method is best for bulk delete WITHOUT loading entities?',opts:['foreach + Remove()','ExecuteDeleteAsync() (EF Core 7+)','SaveChangesAsync() only','TruncateAsync()'],ans:1,diff:'medium',exp:'ExecuteDeleteAsync() (EF Core 7+) translates directly to a SQL DELETE WHERE without loading entities into memory — much faster for bulk operations.'},
+{q:'Lazy loading requires navigation properties to be:',opts:['static','sealed','virtual','abstract'],ans:2,diff:'medium',exp:'Lazy loading via proxies requires navigation properties to be virtual so EF can override them in a generated proxy class that intercepts access and loads data on demand.'}
+]},
+
+{id:'sql',name:'SQL Server',col:'#C47EFF',
+concepts:[
+{name:'DDL, DML, Joins — All Types',tag:'core',
+txt:`<table class="dftab"><tr><th>Category</th><th>Commands</th><th>Purpose</th></tr>
+<tr><td>DDL</td><td>CREATE, ALTER, DROP</td><td>Structure of DB objects</td></tr>
+<tr><td>DML</td><td>INSERT, UPDATE, DELETE, SELECT</td><td>Manipulate data</td></tr>
+<tr><td>TCL</td><td>COMMIT, ROLLBACK, SAVEPOINT</td><td>Transaction control</td></tr>
+</table>
+<strong>INNER</strong>: matching rows only. <strong>LEFT</strong>: all left + matching right (NULL if no match).<br>
+<strong>RIGHT</strong>: all right + matching left. <strong>FULL OUTER</strong>: all rows both sides.<br>
+<strong>CROSS</strong>: Cartesian product. <strong>SELF</strong>: table joins itself (hierarchy, org chart).<br>
+<strong>TRUNCATE vs DELETE</strong>: TRUNCATE is faster, resets identity, minimal logging. DELETE is logged row-by-row, can have WHERE clause.`,
+code:`-- LEFT JOIN — all orders even if customer deleted
+SELECT o.Id, ISNULL(c.Name,'Unknown') AS Cust
+FROM Orders o LEFT JOIN Customers c ON o.CustomerId = c.Id;
+
+-- SELF JOIN — employee + manager
+SELECT e.Name AS Emp, m.Name AS Mgr
+FROM Employees e LEFT JOIN Employees m ON e.ManagerId = m.Id;
+
+-- Find orphaned records (no customer)
+SELECT o.Id FROM Orders o
+LEFT JOIN Customers c ON o.CustomerId = c.Id
+WHERE c.Id IS NULL;
+
+-- GROUP BY + HAVING
+SELECT DeptId, COUNT(*) AS Cnt, AVG(Salary) AS Avg
+FROM Employees WHERE IsActive = 1
+GROUP BY DeptId
+HAVING COUNT(*) > 5
+ORDER BY Avg DESC;`},
+{name:'Stored Procedures, Functions, Triggers, Views',tag:'core',
+txt:`<strong>Stored Procedure</strong>: compiled SQL, accepts params, CAN have INSERT/UPDATE/DELETE side effects.<br>
+<strong>Scalar Function</strong>: returns single value. NO side effects — usable in SELECT/WHERE.<br>
+<strong>Table-Valued Function</strong>: returns a table. Queryable like a table.<br>
+<strong>Trigger</strong>: auto-executes AFTER or INSTEAD OF INSERT/UPDATE/DELETE. Use <code>inserted</code> and <code>deleted</code> tables.<br>
+<strong>View</strong>: virtual table (named query). Indexed view: materialized for performance.<br>
+<strong>Cursor</strong>: row-by-row processing — AVOID, use set-based operations instead.`,
+code:`CREATE PROCEDURE GetOrderSummary @CustId INT AS
+BEGIN SET NOCOUNT ON;
+    SELECT o.Id, o.Amount, COUNT(oi.Id) AS Items
+    FROM Orders o JOIN OrderItems oi ON oi.OrderId = o.Id
+    WHERE o.CustomerId = @CustId
+    GROUP BY o.Id, o.Amount;
+END
+
+-- Scalar function
+CREATE FUNCTION dbo.FullName(@F NVARCHAR(50), @L NVARCHAR(50))
+RETURNS NVARCHAR(101)
+AS BEGIN RETURN LTRIM(RTRIM(@F + ' ' + @L)) END
+
+-- Trigger — audit log on status change
+CREATE TRIGGER trg_OrderAudit ON Orders AFTER UPDATE AS
+BEGIN
+    INSERT INTO AuditLog(OrderId, OldStatus, NewStatus, ChangedAt)
+    SELECT d.Id, d.Status, i.Status, GETUTCDATE()
+    FROM deleted d JOIN inserted i ON d.Id = i.Id
+    WHERE d.Status <> i.Status;
+END`},
+{name:'Indexes & Query Optimization',tag:'senior',
+txt:`<strong>Clustered index</strong>: physically orders table rows. ONE per table (usually PK).<br>
+<strong>Non-clustered</strong>: separate structure + row pointers. MANY per table allowed.<br>
+<strong>Covering index</strong>: INCLUDE columns to avoid extra key lookups — very powerful!<br>
+<strong>Execution plan</strong>: Index SEEK (good) vs Table SCAN (bad = full scan).<br>
+<strong>BAD patterns that kill index performance</strong>:
+<ul class="bl"><li>Function on indexed column: <code>WHERE YEAR(CreatedAt)=2024</code></li>
+<li>Leading wildcard: <code>WHERE Name LIKE '%kumar'</code></li>
+<li>Implicit type conversion: comparing int column to varchar</li></ul>`,
+code:`-- Covering index — includes needed columns, avoids key lookup
+CREATE INDEX IX_Orders_Cover ON Orders(CustomerId, Status)
+INCLUDE(Amount, CreatedAt);
+
+-- ❌ Can't use index — function on column
+WHERE YEAR(CreatedAt) = 2024
+
+-- ✅ Uses index — range comparison
+WHERE CreatedAt >= '2024-01-01' AND CreatedAt < '2025-01-01'
+
+-- ❌ Can't use index — leading wildcard
+WHERE Name LIKE '%kumar'
+
+-- ✅ Uses index — trailing wildcard
+WHERE Name LIKE 'keer%'
+
+-- Check IO stats
+SET STATISTICS IO ON;
+SELECT * FROM Orders WHERE CustomerId = 42;
+-- Look for: Scan count, logical reads`},
+{name:'CTEs, Window Functions & Classic SQL Problems',tag:'senior',
+txt:`<strong>CTE (WITH)</strong>: named temp result set. Non-physical (re-evaluated). Can be recursive for hierarchies.<br>
+<strong>RANK()</strong>: gaps after ties (1,1,3). <strong>DENSE_RANK()</strong>: no gaps (1,1,2). <strong>ROW_NUMBER()</strong>: always unique.<br>
+<strong>LAG(col)</strong>: previous row value. <strong>LEAD(col)</strong>: next row value.<br>
+<strong>Classic problems</strong>: Nth highest salary, find duplicates, employee hierarchy, running total.`,
+code:`-- CTE
+WITH TopCust AS (
+    SELECT CustomerId, SUM(Amount) AS Total
+    FROM Orders GROUP BY CustomerId HAVING SUM(Amount) > 10000
+)
+SELECT c.Name, tc.Total FROM TopCust tc
+JOIN Customers c ON tc.CustomerId = c.Id;
+
+-- Window functions
+SELECT Name, Dept, Salary,
+    RANK()       OVER(PARTITION BY Dept ORDER BY Salary DESC) AS Rnk,
+    DENSE_RANK() OVER(PARTITION BY Dept ORDER BY Salary DESC) AS DRnk,
+    ROW_NUMBER() OVER(ORDER BY Salary DESC) AS RowNum,
+    LAG(Salary)  OVER(ORDER BY HireDate) AS PrevSalary,
+    SUM(Salary)  OVER(PARTITION BY Dept) AS DeptTotal
+FROM Employees;
+
+-- 3rd highest salary
+SELECT DISTINCT Salary FROM Employees
+ORDER BY Salary DESC OFFSET 2 ROWS FETCH NEXT 1 ROWS ONLY;
+
+-- Find duplicate emails
+SELECT Email, COUNT(*) AS Cnt FROM Customers
+GROUP BY Email HAVING COUNT(*) > 1;`},
+{name:'ACID, Transactions & Deadlocks',tag:'senior',
+txt:`<strong>ACID</strong>: Atomicity (all or nothing) | Consistency (valid state) | Isolation (concurrent safe) | Durability (persists after crash).<br>
+<strong>Deadlock</strong>: Tx A holds lock on T1 needs T2; Tx B holds T2 needs T1. SQL Server kills one (deadlock victim with error 1205).<br>
+<strong>Prevention</strong>: consistent lock order, short transactions, READ COMMITTED SNAPSHOT isolation.<br>
+<strong>Temp table vs Table variable</strong>: <code>#Temp</code> is physical in TempDB with stats. <code>@TblVar</code> is batch-scoped, no stats.`,
+code:`BEGIN TRANSACTION;
+BEGIN TRY
+    UPDATE Accounts SET Balance -= 500 WHERE Id = 1;
+    UPDATE Accounts SET Balance += 500 WHERE Id = 2;
+    IF (SELECT Balance FROM Accounts WHERE Id = 1) < 0
+        THROW 50001, 'Insufficient funds', 1;
+    COMMIT TRANSACTION;
+END TRY
+BEGIN CATCH
+    ROLLBACK TRANSACTION;
+    THROW;
+END CATCH;`}
+],
+tests:[
+{q:'Which JOIN returns ALL rows from both tables with NULLs where no match?',opts:['INNER JOIN','LEFT JOIN','RIGHT JOIN','FULL OUTER JOIN'],ans:3,diff:'easy',exp:'FULL OUTER JOIN returns ALL rows from both tables. Where there is no match on either side, NULL is returned for the non-matching columns.'},
+{q:'RANK() vs DENSE_RANK(): two rows share rank 2. Next rank in DENSE_RANK?',opts:['4','3','2','Depends'],ans:1,diff:'medium',exp:'DENSE_RANK does not skip ranks after ties. After two rows at rank 2, next is 3. RANK() would skip to 4.'},
+{q:'WHERE vs HAVING: which filters AFTER GROUP BY aggregation?',opts:['WHERE','HAVING','Both','Neither'],ans:1,diff:'easy',exp:'HAVING filters groups AFTER GROUP BY. WHERE filters rows BEFORE grouping. You cannot use aggregate functions (SUM, COUNT) in WHERE.'},
+{q:'Which WHERE clause CAN use an index on CreatedAt column?',opts:['WHERE YEAR(CreatedAt)=2024','WHERE MONTH(CreatedAt)=6','WHERE CreatedAt>=\'2024-01-01\' AND CreatedAt<\'2025-01-01\'','WHERE CAST(CreatedAt AS DATE)=\'2024-01-01\''],ans:2,diff:'hard',exp:'Applying a function to an indexed column prevents index use. Direct range comparison on the raw column allows an Index Seek.'},
+{q:'ACID: "all or nothing" is which property?',opts:['Consistency','Isolation','Atomicity','Durability'],ans:2,diff:'easy',exp:'Atomicity ensures all statements in a transaction commit together or all are rolled back. No partial commits.'},
+{q:'Clustered index: how many per table?',opts:['Unlimited','Up to 10','Exactly 1','None — optional'],ans:2,diff:'easy',exp:'A table can have exactly ONE clustered index because it physically reorders the data rows. Multiple non-clustered indexes are allowed.'},
+{q:'SET NOCOUNT ON in a stored procedure does what?',opts:['Makes it read-only','Suppresses "N rows affected" — reduces network traffic','Disables transactions','Prevents index usage'],ans:1,diff:'medium',exp:'SET NOCOUNT ON suppresses the row count messages sent after each DML statement, reducing network traffic. Best practice in all stored procedures.'},
+{q:'CTE vs Temp Table: which stores data physically in TempDB?',opts:['CTE','Temp Table (#)','Both','Neither'],ans:1,diff:'medium',exp:'Temp tables (#TempTable) are physically stored in TempDB with their own statistics. CTEs are virtual — just named subqueries, re-evaluated each time referenced.'},
+{q:'Deadlock: SQL Server resolves it by:',opts:['Waiting indefinitely','Rolling back both','Killing one transaction (deadlock victim)','Queuing them'],ans:2,diff:'medium',exp:'SQL Server detects deadlocks and terminates one transaction (the deadlock victim) with error 1205, allowing the other to complete.'},
+{q:'Stored Procedure vs Function: key difference?',opts:['SP is faster','Function can have side effects; SP cannot','SP can have side effects (INSERT/UPDATE); Function cannot','No difference'],ans:2,diff:'medium',exp:'Stored procedures can have DML side effects (INSERT, UPDATE, DELETE). Functions cannot — they must be pure/deterministic and return a value or table. Functions can be used in SELECT; SPs cannot.'}
+]},
+
+{id:'solid',name:'SOLID & Design Patterns',col:'#7EFFA0',
+concepts:[
+{name:'SOLID — All 5 Principles with Examples',tag:'core',
+txt:`<table class="dftab"><tr><th>Principle</th><th>Full Name</th><th>Violation</th><th>Fix</th></tr>
+<tr><td>S</td><td>Single Responsibility</td><td>UserService saves, emails, logs, validates all in one class</td><td>Split into separate classes</td></tr>
+<tr><td>O</td><td>Open/Closed</td><td>Edit existing PaymentService to add UPI</td><td>New UpiPayment class implementing IPayment</td></tr>
+<tr><td>L</td><td>Liskov Substitution</td><td>Square inherits Rectangle, breaks area = W×H</td><td>Use composition or separate types</td></tr>
+<tr><td>I</td><td>Interface Segregation</td><td>IWorker forces robots to implement Eat()</td><td>Split: IWorkable, IFeedable</td></tr>
+<tr><td>D</td><td>Dependency Inversion</td><td>new SqlOrderRepository() directly inside service</td><td>Inject IOrderRepository via constructor</td></tr>
+</table>`,
+code:`// DIP — depend on abstraction, not concrete
+public class OrderService(IOrderRepository repo) { }  // ✅
+// NOT: private SqlOrderRepository _repo = new();     // ❌
+
+// OCP — add new without modifying existing
+public interface IPaymentMethod { Task<bool> Pay(decimal amount); }
+public class Stripe   : IPaymentMethod { /* existing */ }
+public class Razorpay : IPaymentMethod { /* existing */ }
+public class UpiPayment : IPaymentMethod { /* new — existing code untouched ✅ */ }
+
+// ISP — split fat interfaces
+public interface IReadRepo<T>  { Task<T> GetAsync(int id); }
+public interface IWriteRepo<T> { Task SaveAsync(T entity); }
+// Don't force read-only repos to implement Save`},
+{name:'Repository, Unit of Work & Singleton Patterns',tag:'core',
+txt:`<strong>Repository</strong>: abstracts data access behind interface. Makes unit testing easy (mock the interface).<br>
+<strong>Unit of Work</strong>: coordinates multiple repositories in a single transaction. EF Core DbContext IS a built-in UoW.<br>
+<strong>Singleton</strong>: one instance for app lifetime. Use DI (<code>AddSingleton</code>) not static — enables testing.<br>
+<strong>Generic repository</strong>: common CRUD. <strong>Specific repository</strong>: domain-specific queries.`,
+code:`public interface IOrderRepository {
+    Task<Order?> GetByIdAsync(int id);
+    Task<IEnumerable<Order>> GetAllAsync();
+    Task<int> AddAsync(Order o);
+    Task UpdateAsync(Order o);
+    Task DeleteAsync(int id);
+}
+
+public interface IUnitOfWork : IDisposable {
+    IOrderRepository Orders { get; }
+    ICustomerRepository Customers { get; }
+    Task<int> CommitAsync(); // = SaveChangesAsync
+}
+
+// DbContext IS the Unit of Work in EF Core
+// SaveChangesAsync() commits all tracked changes atomically`},
+{name:'Factory, Strategy & Decorator Patterns',tag:'core',
+txt:`<strong>Factory</strong>: creates objects without exposing creation logic. Decouples creation from usage.<br>
+<strong>Strategy</strong>: interchangeable algorithms at runtime behind a common interface.<br>
+<strong>Decorator</strong>: wraps an object to add behaviour WITHOUT modifying it. Follows OCP + SRP.<br>
+<strong>Observer</strong>: one-to-many notification — C# events implement this pattern naturally.`,
+code:`// Factory — runtime object creation
+public static INotification Create(string type) => type switch {
+    "email" => new EmailNotification(),
+    "sms"   => new SmsNotification(),
+    "push"  => new PushNotification(),
+    _ => throw new ArgumentException(type)
+};
+
+// Strategy — interchangeable algorithms
+public interface ISortStrategy { void Sort(List<int> d); }
+public class QuickSort : ISortStrategy { public void Sort(List<int> d) { /*...*/ } }
+public class MergeSort : ISortStrategy { public void Sort(List<int> d) { /*...*/ } }
+public class Processor(ISortStrategy s) { public void Sort(List<int> d) => s.Sort(d); }
+
+// Decorator — adds caching without changing IOrderRepository
+public class CachedOrderRepo(IOrderRepository inner, IMemoryCache cache)
+    : IOrderRepository {
+    public async Task<Order?> GetByIdAsync(int id) {
+        if (cache.TryGetValue($"o_{id}", out Order? c)) return c; // cache hit
+        var o = await inner.GetByIdAsync(id);                     // delegate
+        cache.Set($"o_{id}", o, TimeSpan.FromMinutes(10));
+        return o;
+    }
+}`}
+],
+tests:[
+{q:'SOLID: add features via new code, not modifying existing?',opts:['SRP','OCP','LSP','DIP'],ans:1,diff:'easy',exp:'Open/Closed Principle: software should be open for extension (new classes) but closed for modification. Add new payment = new class, no editing existing code.'},
+{q:'Injecting IOrderRepo (not SqlOrderRepo) into service = which principle?',opts:['SRP','OCP','ISP','DIP'],ans:3,diff:'easy',exp:'Dependency Inversion: high-level modules depend on abstractions (interfaces), not concretions. Enables swapping implementations and unit testing.'},
+{q:'Decorator pattern primary purpose:',opts:['Create objects','Wrap object adding behaviour without modifying it','Ensure single instance','Handle events'],ans:1,diff:'medium',exp:'Decorator wraps an existing object, forwards calls, and adds behaviour before/after. CachedRepository adds caching to IOrderRepository without changing the original class.'},
+{q:'DbContext in EF Core acts as:',opts:['Repository only','DbSet only','Unit of Work (one transaction for all repos)','Singleton service'],ans:2,diff:'medium',exp:'DbContext is EF Core\'s built-in Unit of Work. It tracks changes across all DbSets and commits them all atomically via SaveChangesAsync().'},
+{q:'Strategy pattern solves:',opts:['Single instance needed','Algorithms interchangeable at runtime','Add behaviour without modifying','Notify multiple subscribers'],ans:1,diff:'easy',exp:'Strategy encapsulates a family of algorithms behind an interface. The algorithm can be swapped at runtime. Examples: payment methods, sort strategies, notification channels.'},
+{q:'LSP violation example:',opts:['Interface too large','Square inheriting Rectangle breaks area = W×H','Class has multiple methods','No constructor defined'],ans:1,diff:'hard',exp:'LSP: subclasses must be substitutable for base without breaking behaviour. Square inheriting Rectangle is the classic violation — independently setting W and H makes area formula incorrect.'},
+{q:'Interface Segregation: IWorker forces robots to implement Eat(). Fix:',opts:['Remove Eat() entirely','Split into IWorkable and IFeedable','Make Eat() optional','Use abstract class'],ans:1,diff:'medium',exp:'ISP: clients should not be forced to depend on interfaces they don\'t use. Split fat interfaces into smaller focused ones. Robots implement IWorkable; humans implement both.'},
+{q:'Factory pattern primary benefit:',opts:['Thread safety','Decouples object creation from usage','Ensures one instance','Adds caching'],ans:1,diff:'easy',exp:'Factory encapsulates creation logic. Callers don\'t need to know which concrete class to instantiate — they call the factory with a type parameter and receive an interface.'},
+{q:'Which pattern is C# events an example of?',opts:['Factory','Strategy','Decorator','Observer'],ans:3,diff:'medium',exp:'C# events implement the Observer pattern — a publisher (event source) notifies multiple subscribers (event handlers) when something happens, without tight coupling.'}
+]},
+
+{id:'git',name:'Git & Azure DevOps',col:'#7EB8FF',
+concepts:[
+{name:'Git Core Commands & Branching',tag:'core',
+txt:`<ul class="bl">
+<li><code>git clone</code>: copy remote repo. <code>git init</code>: create new repo</li>
+<li><code>git add . && git commit -m "msg"</code>: stage all + commit</li>
+<li><code>git push origin branch</code>: push to remote. <code>git pull</code>: fetch + merge</li>
+<li><code>git stash</code>: save uncommitted work. <code>git stash pop</code>: restore</li>
+<li><code>git cherry-pick &lt;hash&gt;</code>: apply specific commit to current branch</li>
+<li><code>git reset --soft HEAD~1</code>: undo commit, KEEP changes staged</li>
+<li><code>git reset --hard HEAD~1</code>: undo commit, DISCARD all changes (DANGEROUS!)</li>
+<li><code>git revert HEAD</code>: SAFE undo — creates new commit (use on shared branches)</li>
+<li><code>git merge</code>: creates merge commit, preserves full history</li>
+<li><code>git rebase</code>: rewrites commits on new base = linear history (NEVER on shared branches!)</li>
+</ul>`,
+code:`# Feature branch workflow
+git checkout -b feature/order-pagination
+git add .
+git commit -m "feat(orders): add pagination"
+git push origin feature/order-pagination
+# Create PR → Code Review → Merge to develop
+
+# Stash uncommitted changes to switch tasks
+git stash
+# do other work...
+git stash pop
+
+# Merge conflict resolution
+git merge develop        # conflict occurs
+# edit files — look for <<<, ===, >>>
+git add .
+git commit -m "fix: resolve merge conflict"
+
+# Safe undo on shared branch
+git revert HEAD          # creates new undo commit ✅
+# vs
+git reset --hard HEAD~1  # DESTRUCTIVE — rewrites history ❌`},
+{name:'Azure DevOps CI/CD Pipeline (YAML)',tag:'core',
+txt:`<strong>CI (Continuous Integration)</strong>: build + test on every PR/commit. Catches bugs early.<br>
+<strong>CD (Continuous Delivery)</strong>: auto-deploy to environments after CI passes.<br>
+<strong>Stages</strong>: Build → Dev → QA → Staging → Production with approval gates between stages.<br>
+<strong>Variable Groups</strong>: share secrets across pipelines. Link to Azure Key Vault for auto-rotation!<br>
+<strong>SonarQube</strong>: static code analysis. Quality gate fails pipeline if coverage drops or critical issues found.<br>
+<strong>dependsOn</strong>: controls stage execution order. <strong>condition</strong>: succeeded() / failed() / always().`,
+code:`# azure-pipelines.yml
+trigger:
+  branches: { include: [main, develop] }
+pr:
+  branches: { include: [main] }
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildAndTest
+    pool: { vmImage: 'windows-latest' }
+    steps:
+    - task: UseDotNet@2
+      inputs: { version: '8.x' }
+    - script: dotnet restore
+    - task: SonarQubePrepare@5
+      inputs: { SonarQube: 'SQ-Connection', scannerMode: MSBuild }
+    - script: dotnet build -c Release
+    - script: dotnet test --collect:"XPlat Code Coverage"
+    - task: SonarQubeAnalyze@5
+    - task: SonarQubePublish@5
+    - task: DotNetCoreCLI@2
+      inputs: { command: publish, arguments: '-c Release -o $(Build.ArtifactStagingDirectory)' }
+    - task: PublishBuildArtifacts@1
+
+- stage: DeployDev
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: Deploy
+    environment: 'dev'`}
+],
+tests:[
+{q:'git merge vs git rebase: what does rebase create?',opts:['Merge commit with history','Linear history by rewriting commits','New branch','Tag'],ans:1,diff:'medium',exp:'git rebase rewrites commits on top of the target branch, creating a clean linear history. Never rebase shared/public branches as it rewrites history others depend on.'},
+{q:'git stash pop does what?',opts:['Deletes stash','Restores most recent stash to working directory','Creates new branch','Commits changes'],ans:1,diff:'easy',exp:'git stash pop restores the most recently stashed changes back to the working directory and removes that stash entry from the stack.'},
+{q:'git reset --hard HEAD~1 vs git revert HEAD:',opts:['Same result','--hard discards changes destructively; revert creates new undo commit','revert is destructive','--hard is safer'],ans:1,diff:'medium',exp:'--hard permanently discards commits and changes (dangerous on shared branches). git revert creates a new commit that undoes the previous one — safe for shared branches.'},
+{q:'SonarQube Quality Gate fails pipeline when:',opts:['Build takes too long','Coverage drops or new critical issues found','YAML syntax error','Deployment fails'],ans:1,diff:'easy',exp:'Quality Gates enforce minimum quality standards. They fail when code coverage drops below the threshold or new critical/blocker issues are introduced in new code.'},
+{q:'Azure DevOps Variable Group linked to Key Vault provides:',opts:['Faster builds','Secrets auto-fetched at runtime with key rotation support','Test result grouping','Release notes'],ans:1,diff:'medium',exp:'Variable Groups linked to Azure Key Vault automatically fetch secret values at pipeline runtime, enabling secure secrets management with automatic key rotation.'},
+{q:'dependsOn in YAML pipeline controls:',opts:['NuGet dependencies','Stage execution order','Variable imports','Agent pool'],ans:1,diff:'easy',exp:'dependsOn specifies which stage(s) must complete successfully before this stage starts, controlling execution order in multi-stage pipelines.'},
+{q:'PR gate in Azure DevOps enforces:',opts:['Auto-deploy','Build pass + reviewer approval before merge','DB backup','Code formatting'],ans:1,diff:'easy',exp:'PR gates are branch policies: require a successful build, minimum reviewer approvals, linked work items, resolved comments. All must pass before the PR can be merged.'},
+{q:'git cherry-pick is used to:',opts:['Merge entire branch','Apply a specific commit to current branch','Undo last commit','Rename a branch'],ans:1,diff:'medium',exp:'git cherry-pick <hash> applies a specific commit from any branch to the current branch. Useful for backporting a hotfix to multiple release branches.'},
+{q:'Which git command downloads changes WITHOUT merging into current branch?',opts:['git pull','git fetch','git clone','git stash'],ans:1,diff:'easy',exp:'git fetch downloads commits, branches, and tags from remote but does NOT merge them. git pull = git fetch + git merge. Use fetch to inspect changes before merging.'}
+]}
+];
+
+// ─── STATE ───
+let CU=null,CP='dash',CT=null,TS=null,pinBuf='',selUid=null,tmrInt=null;
+const sk=(u,k)=>`p2_${u}_${k}`;
+const sg=(u,k,d)=>{try{const v=sessionStorage.getItem(sk(u,k));return v?JSON.parse(v):d}catch{return d}};
+const ss=(u,k,v)=>{try{sessionStorage.setItem(sk(u,k),JSON.stringify(v))}catch{}};
+const gP=u=>sg(u,'p',{});const sP=(u,p)=>ss(u,'p',p);
+const gH=u=>sg(u,'h',[]);const aH=(u,r)=>{const h=gH(u);h.unshift(r);if(h.length>50)h.pop();ss(u,'h',h)};
+
+function initLogin(){
+  document.getElementById('urow').innerHTML=USERS.map(u=>{
+    const p=gP(u.id),done=Object.values(p).filter(x=>x.a>0).length,pct=Math.round(done/TOPICS.length*100);
+    return`<div class="ucard" id="uc-${u.id}" onclick="pickU('${u.id}')" style="--col:${u.col}">
+      <div class="uav">${u.init}</div><div class="unm">${u.name}</div>
+      <div class="url">${u.role}</div><div class="upb" style="width:${pct}%"></div></div>`;
+  }).join('');
+  document.getElementById('pinp').innerHTML=
+    [...'123456789'].map(k=>`<button class="pk" onclick="pk('${k}')">${k}</button>`).join('')+
+    `<button class="pk" onclick="pk('del')">⌫</button><button class="pk" onclick="pk('0')">0</button><button class="pk" onclick="pk('ok')">✓</button>`;
+}
+function pickU(uid){selUid=uid;pinBuf='';document.querySelectorAll('.ucard').forEach(c=>c.classList.remove('sel'));document.getElementById('uc-'+uid).classList.add('sel');const u=USERS.find(x=>x.id===uid);document.getElementById('pinl').textContent=`PIN for ${u.name}`;document.getElementById('pine').textContent='';document.getElementById('pinw').classList.add('show');doDots();}
+function doDots(){document.getElementById('pind').innerHTML=Array.from({length:4},(_,i)=>`<div class="pdot ${i<pinBuf.length?'on':''}"></div>`).join('');}
+function pk(k){if(!selUid)return;document.getElementById('pine').textContent='';if(k==='del'){pinBuf=pinBuf.slice(0,-1);doDots();return}if(k==='ok'){verP();return}if(pinBuf.length<4){pinBuf+=k;doDots()}if(pinBuf.length===4)setTimeout(verP,150);}
+function verP(){const u=USERS.find(x=>x.id===selUid);if(pinBuf===u.pin){CU=u;document.getElementById('login').style.display='none';document.getElementById('app').style.display='flex';const av=document.getElementById('hav');av.style.cssText=`background:color-mix(in srgb,${u.col} 15%,transparent);color:${u.col};border:1px solid ${u.col}`;av.textContent=u.init;document.getElementById('hnm').textContent=u.name;buildSB();goTo('dash');}else{pinBuf='';doDots();document.getElementById('pine').textContent='Incorrect PIN. Try again.';}}
+function logout(){CU=null;CT=null;TS=null;selUid=null;pinBuf='';clearInterval(tmrInt);document.getElementById('app').style.display='none';document.getElementById('login').style.display='flex';document.getElementById('pinw').classList.remove('show');initLogin();}
+function buildSB(f=''){const p=gP(CU.id),fl=TOPICS.filter(t=>!f||t.name.toLowerCase().includes(f.toLowerCase()));document.getElementById('sbsc').innerHTML=`<div class="sbsec">Overview</div><div class="ni ${CP==='dash'?'active':''}" onclick="goTo('dash')" style="--col:var(--c4)"><span class="nd"></span>Dashboard</div><div class="sbsec">Part 2 Topics</div>`+fl.map(t=>{const tp=p[t.id],d=tp&&tp.a>0;return`<div class="ni ${CP==='topic'&&CT?.id===t.id?'active':''}${d?' done':''}" onclick="goTo('topic','${t.id}')" style="--col:${t.col}"><span class="nd"></span><span style="flex:1;font-size:12px;line-height:1.3">${t.name}</span>${d?`<span class="ns">${tp.b}%</span>`:''}</div>`;}).join('')+`<div class="sbsec">More</div><div class="ni ${CP==='hist'?'active':''}" onclick="goTo('hist')" style="--col:var(--c4)"><span class="nd"></span>Test History</div>`;}
+function fSB(v){buildSB(v)}
+function goTo(pg,tid){CP=pg;clearInterval(tmrInt);if(pg==='topic'){CT=TOPICS.find(t=>t.id===tid)}document.getElementById('hpg').textContent=pg==='dash'?'Dashboard':pg==='topic'?CT.name:pg==='test'?'Mock Test':pg==='results'?'Results':'History';buildSB(document.getElementById('sbs').value);const m=document.getElementById('main');if(pg==='dash')rDash(m);else if(pg==='topic')rTopic(m);else if(pg==='test')rTest(m);else if(pg==='results')rResults(m);else if(pg==='hist')rHist(m);m.scrollTop=0;}
+function hl(c){return c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/(\/\/[^\n]*)/g,'<span class="cmt">$1</span>').replace(/(#[^\n]*)/g,'<span class="cmt">$1</span>').replace(/\b(public|private|protected|internal|static|abstract|sealed|virtual|override|new|partial|readonly|const|var|dynamic|using|namespace|class|interface|struct|enum|record|async|await|Task|return|if|else|for|foreach|while|try|catch|finally|throw|null|true|false|void|string|int|bool|decimal|double|float|long|char|object|base|this|where|get|set|init)\b/g,'<span class="kw">$1</span>').replace(/("(?:[^"\\]|\\.)*")/g,'<span class="str">$1</span>').replace(/\b(\d+(?:\.\d+)?[mMfFdD]?)\b/g,'<span class="num">$1</span>');}
+function rDash(m){const p=gP(CU.id);let att=0,bs=0,st=0;TOPICS.forEach(t=>{const tp=p[t.id];if(tp){att+=tp.a;bs+=tp.b;st++}});const avg=st?Math.round(bs/st):0,tq=TOPICS.reduce((a,t)=>a+t.tests.length,0);m.innerHTML=`<div class="dh"><h1>Hello, ${CU.name} 👋</h1><p style="color:var(--t2);font-size:13px;margin-top:4px">Part 2 — ${TOPICS.length} topics · ${tq} mock questions</p></div><div class="sgrid"><div class="sbox"><div class="sv" style="color:var(--c4)">${st}/${TOPICS.length}</div><div class="sl">Topics started</div></div><div class="sbox"><div class="sv" style="color:var(--c3)">${att}</div><div class="sl">Tests taken</div></div><div class="sbox"><div class="sv" style="color:${avg>=70?'var(--c1)':avg>=50?'var(--c4)':'var(--danger)'}">${avg}%</div><div class="sl">Avg best score</div></div><div class="sbox"><div class="sv" style="color:var(--c5)">${TOPICS.length-st}</div><div class="sl">Remaining</div></div></div><div class="sec">Topics in Part 2</div><div class="pgrid">${TOPICS.map(t=>{const tp=p[t.id],pct=tp?tp.b:0,at=tp?tp.a:0;return`<div class="pt" onclick="goTo('topic','${t.id}')" style="--col:${t.col}"><div class="ptt"><span class="ptd"></span><span class="ptn">${t.name}</span><span class="ptc">${t.tests.length}Q</span></div><div class="pbb"><div class="pbf" style="width:${pct}%"></div></div><div class="ppc">${pct>0?pct+'% best · '+at+' test'+(at>1?'s':''):'Not started'}</div></div>`;}).join('')}</div><div class="sec">Navigate to other parts</div><div style="display:flex;gap:10px;flex-wrap:wrap"><a href="part1.html" style="display:inline-flex;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px 18px;text-decoration:none;color:var(--t1);font-size:13px">← Part 1 · C# · Collections · MVC</a><a href="part3.html" style="display:inline-flex;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px 18px;text-decoration:none;color:var(--t1);font-size:13px">Part 3 → Testing · Security · JS · Agile</a></div>`;}
+function rTopic(m){const t=CT,p=gP(CU.id),tp=p[t.id];m.innerHTML=`<div class="tban" style="--col:${t.col}"><div class="btop"><div><div class="btt">${t.name}</div><div class="bts">${t.concepts.length} concepts · ${t.tests.length} questions${tp?` · Best: ${tp.b}%`:''}</div></div><button class="stbtn" style="background:${t.col}" onclick="startTest()">Mock Test →</button></div><div class="bcs"><span class="chip cc">Core</span><span class="chip cs">Senior</span><span class="chip ca">Advanced</span></div></div><div class="sec">Concepts (${t.concepts.length})</div><div class="clist">${t.concepts.map((c,i)=>`<div class="cx"><div class="cxh" onclick="tCC(${i})" style="--col:${t.col}"><span class="ctag chip ${c.tag==='core'?'cc':c.tag==='senior'?'cs':'ca'}">${c.tag}</span><span class="cnm">${c.name}</span><span class="carr" id="ca${i}">›</span></div><div class="cxb" id="cb${i}"><div class="ctx">${c.txt}</div>${c.code?`<pre class="cb">${hl(c.code)}</pre>`:''}</div></div>`).join('')}</div><div style="text-align:center;padding:16px 0 40px"><button class="stbtn" style="background:${t.col};font-size:15px;padding:14px 32px" onclick="startTest()">Start ${t.tests.length}-question Mock Test →</button></div>`;}
+function tCC(i){const b=document.getElementById('cb'+i),a=document.getElementById('ca'+i);const o=b.classList.toggle('open');a.classList.toggle('open',o);}
+function startTest(){TS={topic:CT,qs:[...CT.tests],cur:0,ans:Array(CT.tests.length).fill(null),rev:Array(CT.tests.length).fill(false),t0:Date.now(),tLeft:CT.tests.length*60,done:false};goTo('test');startTmr();}
+function startTmr(){clearInterval(tmrInt);tmrInt=setInterval(()=>{if(!TS||TS.done){clearInterval(tmrInt);return}TS.tLeft--;const el=document.getElementById('ttmr');if(el){const mn=Math.floor(TS.tLeft/60),sc=TS.tLeft%60;el.textContent=`${mn}:${String(sc).padStart(2,'0')}`;el.className='tmr'+(TS.tLeft<60?' danger':TS.tLeft<120?' warn':'');}if(TS.tLeft<=0)finTest();},1000);}
+function rTest(m){if(!TS)return;const q=TS.qs[TS.cur],mn=Math.floor(TS.tLeft/60),sc=TS.tLeft%60;const qpr=TS.qs.map((_,i)=>{let cl='';if(i===TS.cur)cl='cur';else if(TS.rev[i])cl=TS.ans[i]===TS.qs[i].ans?'ok':'bad';else if(TS.ans[i]!==null)cl='ans';return`<div class="qp ${cl}" onclick="goQ(${i})">${i+1}</div>`;}).join('');const opts=q.opts.map((o,i)=>{let cl='';if(TS.rev[TS.cur]){if(i===q.ans)cl='correct';else if(i===TS.ans[TS.cur]&&i!==q.ans)cl='wrong';}else if(i===TS.ans[TS.cur])cl='sel';return`<div class="opt ${cl}${TS.rev[TS.cur]?' locked':''}" onclick="selO(${i})"><span class="ol">${'ABCD'[i]}</span>${o}</div>`;}).join('');m.innerHTML=`<div class="tsh"><div class="ttop"><div class="ti"><h2>${TS.topic.name} — Mock Test</h2><p>Q${TS.cur+1} of ${TS.qs.length} · <span class="qdiff qd${(q.diff||'easy')[0]}">${q.diff||'easy'}</span></p></div><div class="tmr" id="ttmr">${mn}:${String(sc).padStart(2,'0')}</div></div><div class="qpr">${qpr}</div><div class="qcard"><div class="qnum">Question ${TS.cur+1}</div><div class="qtx">${q.q}</div>${q.code?`<pre class="qco">${hl(q.code)}</pre>`:''}<div class="opts">${opts}</div><div class="expl ${TS.rev[TS.cur]?'show':''}" id="expl">💡 ${q.exp}</div></div><div class="tnav">${TS.cur>0?`<button class="btn" onclick="goQ(${TS.cur-1})">← Prev</button>`:''}${TS.ans[TS.cur]!==null&&!TS.rev[TS.cur]?`<button class="btn btnw" onclick="revO()">Show Answer</button>`:''}${TS.cur<TS.qs.length-1?`<button class="btn btnp" onclick="goQ(${TS.cur+1})">Next →</button>`:`<button class="btn btnp" onclick="finTest()">Finish ✓</button>`}</div></div>`;}
+function selO(i){if(TS.rev[TS.cur])return;TS.ans[TS.cur]=i;rTest(document.getElementById('main'))}
+function revO(){TS.rev[TS.cur]=true;rTest(document.getElementById('main'))}
+function goQ(i){TS.cur=i;rTest(document.getElementById('main'))}
+function finTest(){clearInterval(tmrInt);TS.done=true;const ok=TS.ans.filter((a,i)=>a===TS.qs[i].ans).length;const score=Math.round(ok/TS.qs.length*100);const taken=Math.round((Date.now()-TS.t0)/1000);TS.score=score;TS.ok=ok;TS.taken=taken;const p=gP(CU.id),ex=p[TS.topic.id];p[TS.topic.id]={a:(ex?.a||0)+1,b:Math.max(ex?.b||0,score),l:score};sP(CU.id,p);aH(CU.id,{t:TS.topic.name,tid:TS.topic.id,s:score,ok,total:TS.qs.length,taken,d:new Date().toLocaleDateString('en-IN')});goTo('results');}
+function rResults(m){if(!TS)return;const{score,ok,taken,qs,ans}=TS;const gr=score>=80?'A':score>=60?'B':'C';const gm=score>=80?'Interview-ready! 🎯':score>=60?'Good — review weak areas 📖':'Keep practising 💪';m.innerHTML=`<div class="rh"><div class="rsc" style="color:${score>=80?'var(--c1)':score>=60?'var(--c4)':'var(--danger)'}">${score}%</div><div class="rlb">${TS.topic.name}</div><div class="rgr gr${gr.toLowerCase()}">${gr} · ${gm}</div><div class="rst"><div class="rs"><strong>${ok}</strong>Correct</div><div class="rs"><strong>${qs.length-ok}</strong>Wrong</div><div class="rs"><strong>${taken}s</strong>Time</div></div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px"><button class="btn btnp" onclick="startTest()">Retry Test</button><button class="btn" onclick="goTo('topic','${TS.topic.id}')">← Review Concepts</button><button class="btn" onclick="goTo('dash')">Dashboard</button></div><div class="sec">Full Review</div>${qs.map((q,i)=>{const ua=ans[i],isOk=ua===q.ans;return`<div class="ri"><div class="riq">${i+1}. ${q.q}</div>${ua!==null?`<div class="ria ${isOk?'rok':'rbd'}">${isOk?'✓':'✗'} Your answer: ${q.opts[ua]}</div>`:'<div class="ria" style="color:var(--t3)">— Not answered</div>'}${!isOk?`<div class="ria rok">✓ Correct: ${q.opts[q.ans]}</div>`:''}
+<div class="rex">💡 ${q.exp}</div></div>`;}).join('')}`;}
+function rHist(m){const h=gH(CU.id);if(!h.length){m.innerHTML='<div class="empty"><div style="font-size:40px;margin-bottom:12px">📝</div><p>No tests taken yet.</p></div>';return}m.innerHTML=`<div class="sec">Test History (${h.length})</div>`+h.map(r=>`<div class="hr2"><div style="flex:1"><div class="ht">${r.t}</div><div class="hd">${r.d} · ${r.taken}s</div></div><div class="hsc" style="color:${r.s>=80?'var(--c1)':r.s>=60?'var(--c4)':'var(--danger)'}">${r.s}%</div><div style="font-size:12px;color:var(--t3)">${r.ok}/${r.total}</div><button class="btn" style="font-size:11px;padding:5px 12px" onclick="goTo('topic','${r.tid}')">Study</button></div>`).join('');}
+initLogin();
+</script>
+</body>
+</html>
