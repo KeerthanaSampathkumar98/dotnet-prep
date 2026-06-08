@@ -226,35 +226,35 @@ txt:`<strong>AAA Pattern</strong>: Arrange (setup) → Act (execute method) → 
 <strong>Mock.Verify()</strong>: assert method was called (Times.Once, Times.Never, Times.Exactly(n)).<br>
 <strong>It.IsAny&lt;T&gt;()</strong>: matches any argument of type T. <strong>Test naming</strong>: MethodName_Scenario_ExpectedResult.`,
 code:`public class OrderServiceTests {
-    private readonly Mock<IOrderRepository> _repo = new();
-    private readonly Mock<IEmailService> _email = new();
+    private readonly Mock&lt;IOrderRepository&gt; _repo = new();
+    private readonly Mock&lt;IEmailService&gt; _email = new();
     private readonly OrderService _sut;
 
-    public OrderServiceTests() =>
+    public OrderServiceTests() =&gt;
         _sut = new OrderService(_repo.Object, _email.Object);
 
     [Fact]
     public async Task CreateOrder_ValidInput_ReturnsCreatedOrder() {
         // Arrange
         var dto = new CreateOrderDto { CustomerId=1, Amount=100m };
-        _repo.Setup(r => r.AddAsync(It.IsAny<Order>())).ReturnsAsync(42);
+        _repo.Setup(r =&gt; r.AddAsync(It.IsAny&lt;Order&gt;())).ReturnsAsync(42);
 
         // Act
         var result = await _sut.CreateAsync(dto);
 
         // Assert
         Assert.Equal(42, result.Id);
-        _repo.Verify(r => r.AddAsync(It.IsAny<Order>()), Times.Once);
-        _email.Verify(e => e.SendAsync(It.IsAny<string>()), Times.Once);
+        _repo.Verify(r =&gt; r.AddAsync(It.IsAny&lt;Order&gt;()), Times.Once);
+        _email.Verify(e =&gt; e.SendAsync(It.IsAny&lt;string&gt;()), Times.Once);
     }
 
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
     [InlineData(-999)]
-    public async Task CreateOrder_InvalidAmount_ThrowsException(decimal amt) =>
-        await Assert.ThrowsAsync<ArgumentException>(
-            () => _sut.CreateAsync(new() { Amount = amt }));
+    public async Task CreateOrder_InvalidAmount_ThrowsException(decimal amt) =&gt;
+        await Assert.ThrowsAsync&lt;ArgumentException&gt;(
+            () =&gt; _sut.CreateAsync(new() { Amount = amt }));
 }`},
 {name:'NUnit, MSTest vs xUnit Differences',tag:'core',
 txt:`<table class="dftab"><tr><th>Feature</th><th>xUnit</th><th>NUnit</th><th>MSTest</th></tr>
@@ -319,11 +319,11 @@ txt:`<ul class="bl">
 <strong>SAST (Static)</strong>: SonarQube, Checkmarx — analyzes code without running. Finds code-level bugs.<br>
 <strong>DAST (Dynamic)</strong>: runs against live app — finds runtime vulnerabilities like your Humana work.`,
 code:`// ✅ Path Traversal fix (CWE-22) — your Checkmarx/Humana fix!
-public async Task<IActionResult> Upload(IFormFile file) {
+public async Task&lt;IActionResult&gt; Upload(IFormFile file) {
     var allowed = new[] { ".pdf", ".docx", ".xlsx" };
     var ext = Path.GetExtension(file.FileName).ToLower();
     if (!allowed.Contains(ext)) return BadRequest("Not allowed");
-    if (file.Length > 10 * 1024 * 1024) return BadRequest("Too large");
+    if (file.Length &gt; 10 * 1024 * 1024) return BadRequest("Too large");
     // NEVER use file.FileName as storage path
     string safe = $"{Guid.NewGuid()}{ext}";  // ✅ Guid strips traversal
     string path = Path.Combine(_uploadDir, safe);
@@ -336,7 +336,7 @@ public async Task<IActionResult> Upload(IFormFile file) {
 public record UpdateUserDto(string Name, string Email); // safe fields only ✅
 
 // ✅ Integer overflow prevention (your DAST SubmitAuthUpdate fix)
-if (dto.RetryCount is < 0 or > 10) return BadRequest("Out of range");
+if (dto.RetryCount is &lt; 0 or &gt; 10) return BadRequest("Out of range");
 checked { int r = dto.Amount + dto.Surcharge; } // throws OverflowException ✅
 
 // ✅ Never log sensitive data
@@ -348,7 +348,7 @@ txt:`<strong>HTTPS</strong>: always redirect HTTP → HTTPS in production. UseHt
 <strong>Security headers</strong>: X-Content-Type-Options, X-Frame-Options, Content-Security-Policy reduce attack surface.<br>
 <strong>HttpOnly cookie</strong>: JavaScript cannot read it — prevents XSS from stealing session/JWT.`,
 code:`// CORS — specific origins only ✅
-builder.Services.AddCors(o => o.AddPolicy("Portal", p =>
+builder.Services.AddCors(o =&gt; o.AddPolicy("Portal", p =&gt;
     p.WithOrigins("https://portal.myapp.com")
      .WithMethods("GET", "POST", "PUT", "DELETE")
      .WithHeaders("Authorization", "Content-Type")));
@@ -357,7 +357,7 @@ builder.Services.AddCors(o => o.AddPolicy("Portal", p =>
 // p.AllowAnyOrigin() — allows ANY website to call your API
 
 // Security headers middleware
-app.Use(async (ctx, next) => {
+app.Use(async (ctx, next) =&gt; {
     ctx.Response.Headers.Add("X-Content-Type-Options", "nosniff");
     ctx.Response.Headers.Add("X-Frame-Options", "DENY");
     ctx.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
@@ -393,19 +393,19 @@ var x = 5;
 let y = 10;
 
 // Classic loop bug
-for (var i=0; i<3; i++) {
-    setTimeout(() => console.log(i), 100); // 3,3,3 ❌ var shared
+for (var i=0; i&lt;3; i++) {
+    setTimeout(() =&gt; console.log(i), 100); // 3,3,3 ❌ var shared
 }
-for (let i=0; i<3; i++) {
-    setTimeout(() => console.log(i), 100); // 0,1,2 ✅ let block-scoped
+for (let i=0; i&lt;3; i++) {
+    setTimeout(() =&gt; console.log(i), 100); // 0,1,2 ✅ let block-scoped
 }
 
 // Closure
 function counter() {
     let n = 0;  // captured in closure
     return {
-        inc: () => ++n,
-        val: () => n
+        inc: () =&gt; ++n,
+        val: () =&gt; n
     };
 }
 const c = counter();
@@ -467,21 +467,21 @@ txt:`<strong>Semantic tags</strong>: &lt;header&gt;, &lt;nav&gt;, &lt;main&gt;, 
 <strong>data-* attributes</strong>: store custom data on elements, accessible via <code>element.dataset.name</code>.<br>
 <strong>Box Model</strong>: content → padding → border → margin.<br>
 <strong>box-sizing: border-box</strong>: padding + border INCLUDED in width. Use universally!`,
-code:`<!-- Semantic HTML5 -->
-<main>
-  <section id="orders">
-    <article class="order" data-id="42" data-status="active">
-      <h2>Order #42</h2>
-    </article>
-  </section>
-</main>
+code:`&lt;!-- Semantic HTML5 --&gt;
+&lt;main&gt;
+  &lt;section id="orders"&gt;
+    &lt;article class="order" data-id="42" data-status="active"&gt;
+      &lt;h2&gt;Order #42&lt;/h2&gt;
+    &lt;/article&gt;
+  &lt;/section&gt;
+&lt;/main&gt;
 
-<!-- HTML5 form validation -->
-<form>
-  <input type="email" required placeholder="Email">
-  <input type="number" min="18" max="120" placeholder="Age">
-  <input type="date" id="dob">
-</form>
+&lt;!-- HTML5 form validation --&gt;
+&lt;form&gt;
+  &lt;input type="email" required placeholder="Email"&gt;
+  &lt;input type="number" min="18" max="120" placeholder="Age"&gt;
+  &lt;input type="date" id="dob"&gt;
+&lt;/form&gt;
 
 /* Box model — use border-box universally */
 * { box-sizing: border-box; }
@@ -614,7 +614,15 @@ function logout(){CU=null;CT=null;TS=null;selUid=null;pinBuf='';clearInterval(tm
 function buildSB(f=''){const p=gP(CU.id),fl=TOPICS.filter(t=>!f||t.name.toLowerCase().includes(f.toLowerCase()));document.getElementById('sbsc').innerHTML=`<div class="sbsec">Overview</div><div class="ni ${CP==='dash'?'active':''}" onclick="goTo('dash')" style="--col:var(--c5)"><span class="nd"></span>Dashboard</div><div class="sbsec">Part 3 Topics</div>`+fl.map(t=>{const tp=p[t.id],d=tp&&tp.a>0;return`<div class="ni ${CP==='topic'&&CT?.id===t.id?'active':''}${d?' done':''}" onclick="goTo('topic','${t.id}')" style="--col:${t.col}"><span class="nd"></span><span style="flex:1;font-size:12px;line-height:1.3">${t.name}</span>${d?`<span class="ns">${tp.b}%</span>`:''}</div>`;}).join('')+`<div class="sbsec">More</div><div class="ni ${CP==='hist'?'active':''}" onclick="goTo('hist')" style="--col:var(--c4)"><span class="nd"></span>Test History</div>`;}
 function fSB(v){buildSB(v)}
 function goTo(pg,tid){CP=pg;clearInterval(tmrInt);if(pg==='topic'){CT=TOPICS.find(t=>t.id===tid)}document.getElementById('hpg').textContent=pg==='dash'?'Dashboard':pg==='topic'?CT.name:pg==='test'?'Mock Test':pg==='results'?'Results':'History';buildSB(document.getElementById('sbs').value);const m=document.getElementById('main');if(pg==='dash')rDash(m);else if(pg==='topic')rTopic(m);else if(pg==='test')rTest(m);else if(pg==='results')rResults(m);else if(pg==='hist')rHist(m);m.scrollTop=0;}
-function hl(c){return c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/(\/\/[^\n]*)/g,'<span class="cmt">$1</span>').replace(/(#[^\n]*)/g,'<span class="cmt">$1</span>').replace(/\b(public|private|protected|internal|static|abstract|sealed|virtual|override|new|partial|readonly|const|var|dynamic|using|namespace|class|interface|struct|enum|record|async|await|Task|return|if|else|for|foreach|while|try|catch|finally|throw|null|true|false|void|string|int|bool|decimal|double|float|long|char|object|base|this|where|get|set|init)\b/g,'<span class="kw">$1</span>').replace(/("(?:[^"\\]|\\.)*")/g,'<span class="str">$1</span>').replace(/(`(?:[^`\\]|\\.)*`)/g,'<span class="str">$1</span>').replace(/\b(\d+(?:\.\d+)?[mMfFdD]?)\b/g,'<span class="num">$1</span>');}
+function hl(c){
+  var s=c;
+  s=s.replace(/([\/][\/][^\n]*)/g,'<span class="cmt">$1</span>');
+  s=s.replace(/(&quot;(?:(?!&quot;).)*&quot;)/g,'<span class="str">$1</span>');
+  var kw=['public','private','protected','internal','static','abstract','sealed','virtual','override','new','partial','readonly','const','var','dynamic','using','namespace','class','interface','struct','enum','record','async','await','Task','return','if','else','for','foreach','while','try','catch','finally','throw','null','true','false','void','string','int','bool','decimal','double','float','long','char','object','base','this','where','get','set','init'];
+  kw.forEach(k=>{s=s.replace(new RegExp('\\b'+k+'\\b','g'),'<span class="kw">'+k+'</span>');});
+  s=s.replace(/\b([0-9]+(?:\.[0-9]+)?[mMfFdDlL]?)\b/g,'<span class="num">$1</span>');
+  return s;
+}
 function rDash(m){const p=gP(CU.id);let att=0,bs=0,st=0;TOPICS.forEach(t=>{const tp=p[t.id];if(tp){att+=tp.a;bs+=tp.b;st++}});const avg=st?Math.round(bs/st):0,tq=TOPICS.reduce((a,t)=>a+t.tests.length,0);m.innerHTML=`<div class="dh"><h1>Hello, ${CU.name} 👋</h1><p style="color:var(--t2);font-size:13px;margin-top:4px">Part 3 (Final) — ${TOPICS.length} topics · ${tq} mock questions</p></div><div class="sgrid"><div class="sbox"><div class="sv" style="color:var(--c5)">${st}/${TOPICS.length}</div><div class="sl">Topics started</div></div><div class="sbox"><div class="sv" style="color:var(--c3)">${att}</div><div class="sl">Tests taken</div></div><div class="sbox"><div class="sv" style="color:${avg>=70?'var(--c1)':avg>=50?'var(--c4)':'var(--danger)'}">${avg}%</div><div class="sl">Avg best score</div></div><div class="sbox"><div class="sv" style="color:var(--c4)">${TOPICS.length-st}</div><div class="sl">Remaining</div></div></div><div class="sec">Topics in Part 3</div><div class="pgrid">${TOPICS.map(t=>{const tp=p[t.id],pct=tp?tp.b:0,at=tp?tp.a:0;return`<div class="pt" onclick="goTo('topic','${t.id}')" style="--col:${t.col}"><div class="ptt"><span class="ptd"></span><span class="ptn">${t.name}</span><span class="ptc">${t.tests.length}Q</span></div><div class="pbb"><div class="pbf" style="width:${pct}%"></div></div><div class="ppc">${pct>0?pct+'% best · '+at+' test'+(at>1?'s':''):'Not started'}</div></div>`;}).join('')}</div><div class="sec">Navigate to other parts</div><div style="display:flex;gap:10px;flex-wrap:wrap"><a href="part1.html" style="display:inline-flex;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px 18px;text-decoration:none;color:var(--t1);font-size:13px">← Part 1 · C# · Collections · MVC</a><a href="part2.html" style="display:inline-flex;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px 18px;text-decoration:none;color:var(--t1);font-size:13px">← Part 2 · EF · SQL · SOLID · Git</a></div><div style="background:var(--s1);border:1px solid rgba(126,255,160,.2);border-radius:12px;padding:16px;margin-top:20px"><div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--c1);margin-bottom:8px">🎯 Interview Day Checklist</div><div style="font-size:13px;color:var(--t2);line-height:1.8">✓ C# OOP, collections, LINQ (Part 1)<br>✓ EF Core, SQL joins + window functions (Part 2)<br>✓ SOLID principles, design patterns (Part 2)<br>✓ Unit testing with xUnit + Moq (Part 3)<br>✓ Security: CWE-22, DAST, Checkmarx experience (Part 3)<br>✓ 4 STAR stories ready (Hackathon · AI prototype · NBFC go-lives · Vault fix)<br>✓ Question to ask: "What does success look like in 90 days?"</div></div>`;}
 function rTopic(m){const t=CT,p=gP(CU.id),tp=p[t.id];m.innerHTML=`<div class="tban" style="--col:${t.col}"><div class="btop"><div><div class="btt">${t.name}</div><div class="bts">${t.concepts.length} concepts · ${t.tests.length} questions${tp?` · Best: ${tp.b}%`:''}</div></div><button class="stbtn" style="background:${t.col}" onclick="startTest()">Mock Test →</button></div><div class="bcs"><span class="chip cc">Core</span><span class="chip cs">Senior</span><span class="chip ca">Advanced</span></div></div><div class="sec">Concepts (${t.concepts.length})</div><div class="clist">${t.concepts.map((c,i)=>`<div class="cx"><div class="cxh" onclick="tCC(${i})" style="--col:${t.col}"><span class="ctag chip ${c.tag==='core'?'cc':c.tag==='senior'?'cs':'ca'}">${c.tag}</span><span class="cnm">${c.name}</span><span class="carr" id="ca${i}">›</span></div><div class="cxb" id="cb${i}"><div class="ctx">${c.txt}</div>${c.code?`<pre class="cb">${hl(c.code)}</pre>`:''}</div></div>`).join('')}</div><div style="text-align:center;padding:16px 0 40px"><button class="stbtn" style="background:${t.col};font-size:15px;padding:14px 32px" onclick="startTest()">Start ${t.tests.length}-question Mock Test →</button></div>`;}
 function tCC(i){const b=document.getElementById('cb'+i),a=document.getElementById('ca'+i);const o=b.classList.toggle('open');a.classList.toggle('open',o);}

@@ -236,15 +236,15 @@ txt:`<strong>DbContext</strong>: unit of work — manages DB connection, change 
 <strong>Fluent API</strong> (OnModelCreating): more powerful than DataAnnotations for complex mappings.<br>
 <strong>Migrations</strong>: <code>dotnet ef migrations add Name</code> | <code>dotnet ef database update</code>`,
 code:`public class AppDbContext : DbContext {
-    public AppDbContext(DbContextOptions<AppDbContext> o) : base(o) {}
-    public DbSet<Order> Orders { get; set; }
-    public DbSet<Customer> Customers { get; set; }
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; o) : base(o) {}
+    public DbSet&lt;Order&gt; Orders { get; set; }
+    public DbSet&lt;Customer&gt; Customers { get; set; }
     protected override void OnModelCreating(ModelBuilder mb) {
-        mb.Entity<Order>(e => {
-            e.HasKey(o => o.Id);
-            e.Property(o => o.Amount).HasColumnType("decimal(18,2)");
-            e.HasOne(o => o.Customer).WithMany(c => c.Orders)
-             .HasForeignKey(o => o.CustomerId)
+        mb.Entity&lt;Order&gt;(e =&gt; {
+            e.HasKey(o =&gt; o.Id);
+            e.Property(o =&gt; o.Amount).HasColumnType("decimal(18,2)");
+            e.HasOne(o =&gt; o.Customer).WithMany(c =&gt; c.Orders)
+             .HasForeignKey(o =&gt; o.CustomerId)
              .OnDelete(DeleteBehavior.Restrict);
         });
     }
@@ -264,20 +264,20 @@ txt:`<table class="dftab"><tr><th>Strategy</th><th>When Loaded</th><th>How</th><
 <strong>FindAsync(id)</strong>: checks ChangeTracker cache first, then DB. <strong>FirstOrDefaultAsync()</strong>: always queries DB.`,
 code:`// EAGER — 1 SQL with JOIN ✅
 var orders = await ctx.Orders
-    .Include(o => o.Customer)
-    .Include(o => o.Items).ThenInclude(i => i.Product)
-    .Where(o => o.Status == "Pending")
+    .Include(o =&gt; o.Customer)
+    .Include(o =&gt; o.Items).ThenInclude(i =&gt; i.Product)
+    .Where(o =&gt; o.Status == "Pending")
     .AsNoTracking()   // read-only: no tracking overhead
     .ToListAsync();
 
 // LAZY — enable in options + virtual nav property
-// services.AddDbContext<AppDbContext>(o => o.UseLazyLoadingProxies());
+// services.AddDbContext&lt;AppDbContext&gt;(o =&gt; o.UseLazyLoadingProxies());
 public class Order { public virtual Customer Customer { get; set; } }
 
 // EXPLICIT
 var order = await ctx.Orders.FindAsync(id);
-await ctx.Entry(order).Collection(o => o.Items).LoadAsync();
-await ctx.Entry(order).Reference(o => o.Customer).LoadAsync();`},
+await ctx.Entry(order).Collection(o =&gt; o.Items).LoadAsync();
+await ctx.Entry(order).Reference(o =&gt; o.Customer).LoadAsync();`},
 {name:'CRUD, Change Tracking & Transactions',tag:'core',
 txt:`<strong>Change tracking states</strong>: Added, Modified, Deleted, Unchanged, Detached.<br>
 <strong>SaveChangesAsync()</strong>: detects all changed entities → generates SQL → commits transaction.<br>
@@ -299,7 +299,7 @@ ctx.Orders.Remove(o);
 await ctx.SaveChangesAsync();  // DELETE FROM Orders WHERE Id=...
 
 // BULK (EF Core 7+)
-await ctx.Orders.Where(o => o.IsExpired).ExecuteDeleteAsync();
+await ctx.Orders.Where(o =&gt; o.IsExpired).ExecuteDeleteAsync();
 
 // TRANSACTION
 using var tx = await ctx.Database.BeginTransactionAsync();
@@ -317,7 +317,7 @@ txt:`<strong>One-to-Many</strong>: FK on child, ICollection&lt;T&gt; nav on pare
 code:`// One-to-Many
 public class Customer {
     public int Id { get; set; }
-    public ICollection<Order> Orders { get; set; } = new List<Order>();
+    public ICollection&lt;Order&gt; Orders { get; set; } = new List&lt;Order&gt;();
 }
 public class Order {
     public int Id { get; set; }
@@ -326,8 +326,8 @@ public class Order {
 }
 
 // Many-to-Many (EF Core 5+ — auto join table)
-public class Student { public ICollection<Course> Courses { get; set; } = new(); }
-public class Course  { public ICollection<Student> Students { get; set; } = new(); }
+public class Student { public ICollection&lt;Course&gt; Courses { get; set; } = new(); }
+public class Course  { public ICollection&lt;Student&gt; Students { get; set; } = new(); }
 
 // Stored procedure — SAFE parameterization
 var dt = DateTime.UtcNow.AddDays(-30);
@@ -337,7 +337,7 @@ var orders = await ctx.Orders
 
 // Non-SELECT bulk
 await ctx.Database.ExecuteSqlRawAsync(
-    "UPDATE Products SET IsActive=0 WHERE ExpiresAt < {0}", DateTime.UtcNow);`}
+    "UPDATE Products SET IsActive=0 WHERE ExpiresAt &lt; {0}", DateTime.UtcNow);`}
 ],
 tests:[
 {q:'Which EF Core method loads related data in a single SQL JOIN?',opts:['LazyLoad()','Select()','Include()/ThenInclude()','Load()'],ans:2,diff:'easy',exp:'Include() performs an INNER/LEFT JOIN in generated SQL. ThenInclude() loads nested relationships. Both in the same query — no N+1 problem.'},
@@ -381,7 +381,7 @@ WHERE c.Id IS NULL;
 SELECT DeptId, COUNT(*) AS Cnt, AVG(Salary) AS Avg
 FROM Employees WHERE IsActive = 1
 GROUP BY DeptId
-HAVING COUNT(*) > 5
+HAVING COUNT(*) &gt; 5
 ORDER BY Avg DESC;`},
 {name:'Stored Procedures, Functions, Triggers, Views',tag:'core',
 txt:`<strong>Stored Procedure</strong>: compiled SQL, accepts params, CAN have INSERT/UPDATE/DELETE side effects.<br>
@@ -409,7 +409,7 @@ BEGIN
     INSERT INTO AuditLog(OrderId, OldStatus, NewStatus, ChangedAt)
     SELECT d.Id, d.Status, i.Status, GETUTCDATE()
     FROM deleted d JOIN inserted i ON d.Id = i.Id
-    WHERE d.Status <> i.Status;
+    WHERE d.Status &lt;&gt; i.Status;
 END`},
 {name:'Indexes & Query Optimization',tag:'senior',
 txt:`<strong>Clustered index</strong>: physically orders table rows. ONE per table (usually PK).<br>
@@ -428,7 +428,7 @@ INCLUDE(Amount, CreatedAt);
 WHERE YEAR(CreatedAt) = 2024
 
 -- ✅ Uses index — range comparison
-WHERE CreatedAt >= '2024-01-01' AND CreatedAt < '2025-01-01'
+WHERE CreatedAt &gt;= '2024-01-01' AND CreatedAt &lt; '2025-01-01'
 
 -- ❌ Can't use index — leading wildcard
 WHERE Name LIKE '%kumar'
@@ -448,7 +448,7 @@ txt:`<strong>CTE (WITH)</strong>: named temp result set. Non-physical (re-evalua
 code:`-- CTE
 WITH TopCust AS (
     SELECT CustomerId, SUM(Amount) AS Total
-    FROM Orders GROUP BY CustomerId HAVING SUM(Amount) > 10000
+    FROM Orders GROUP BY CustomerId HAVING SUM(Amount) &gt; 10000
 )
 SELECT c.Name, tc.Total FROM TopCust tc
 JOIN Customers c ON tc.CustomerId = c.Id;
@@ -468,7 +468,7 @@ ORDER BY Salary DESC OFFSET 2 ROWS FETCH NEXT 1 ROWS ONLY;
 
 -- Find duplicate emails
 SELECT Email, COUNT(*) AS Cnt FROM Customers
-GROUP BY Email HAVING COUNT(*) > 1;`},
+GROUP BY Email HAVING COUNT(*) &gt; 1;`},
 {name:'ACID, Transactions & Deadlocks',tag:'senior',
 txt:`<strong>ACID</strong>: Atomicity (all or nothing) | Consistency (valid state) | Isolation (concurrent safe) | Durability (persists after crash).<br>
 <strong>Deadlock</strong>: Tx A holds lock on T1 needs T2; Tx B holds T2 needs T1. SQL Server kills one (deadlock victim with error 1205).<br>
@@ -478,7 +478,7 @@ code:`BEGIN TRANSACTION;
 BEGIN TRY
     UPDATE Accounts SET Balance -= 500 WHERE Id = 1;
     UPDATE Accounts SET Balance += 500 WHERE Id = 2;
-    IF (SELECT Balance FROM Accounts WHERE Id = 1) < 0
+    IF (SELECT Balance FROM Accounts WHERE Id = 1) &lt; 0
         THROW 50001, 'Insufficient funds', 1;
     COMMIT TRANSACTION;
 END TRY
@@ -515,14 +515,14 @@ public class OrderService(IOrderRepository repo) { }  // ✅
 // NOT: private SqlOrderRepository _repo = new();     // ❌
 
 // OCP — add new without modifying existing
-public interface IPaymentMethod { Task<bool> Pay(decimal amount); }
+public interface IPaymentMethod { Task&lt;bool&gt; Pay(decimal amount); }
 public class Stripe   : IPaymentMethod { /* existing */ }
 public class Razorpay : IPaymentMethod { /* existing */ }
 public class UpiPayment : IPaymentMethod { /* new — existing code untouched ✅ */ }
 
 // ISP — split fat interfaces
-public interface IReadRepo<T>  { Task<T> GetAsync(int id); }
-public interface IWriteRepo<T> { Task SaveAsync(T entity); }
+public interface IReadRepo&lt;T&gt;  { Task&lt;T&gt; GetAsync(int id); }
+public interface IWriteRepo&lt;T&gt; { Task SaveAsync(T entity); }
 // Don't force read-only repos to implement Save`},
 {name:'Repository, Unit of Work & Singleton Patterns',tag:'core',
 txt:`<strong>Repository</strong>: abstracts data access behind interface. Makes unit testing easy (mock the interface).<br>
@@ -530,9 +530,9 @@ txt:`<strong>Repository</strong>: abstracts data access behind interface. Makes 
 <strong>Singleton</strong>: one instance for app lifetime. Use DI (<code>AddSingleton</code>) not static — enables testing.<br>
 <strong>Generic repository</strong>: common CRUD. <strong>Specific repository</strong>: domain-specific queries.`,
 code:`public interface IOrderRepository {
-    Task<Order?> GetByIdAsync(int id);
-    Task<IEnumerable<Order>> GetAllAsync();
-    Task<int> AddAsync(Order o);
+    Task&lt;Order?&gt; GetByIdAsync(int id);
+    Task&lt;IEnumerable&lt;Order&gt;&gt; GetAllAsync();
+    Task&lt;int&gt; AddAsync(Order o);
     Task UpdateAsync(Order o);
     Task DeleteAsync(int id);
 }
@@ -540,7 +540,7 @@ code:`public interface IOrderRepository {
 public interface IUnitOfWork : IDisposable {
     IOrderRepository Orders { get; }
     ICustomerRepository Customers { get; }
-    Task<int> CommitAsync(); // = SaveChangesAsync
+    Task&lt;int&gt; CommitAsync(); // = SaveChangesAsync
 }
 
 // DbContext IS the Unit of Work in EF Core
@@ -551,23 +551,23 @@ txt:`<strong>Factory</strong>: creates objects without exposing creation logic. 
 <strong>Decorator</strong>: wraps an object to add behaviour WITHOUT modifying it. Follows OCP + SRP.<br>
 <strong>Observer</strong>: one-to-many notification — C# events implement this pattern naturally.`,
 code:`// Factory — runtime object creation
-public static INotification Create(string type) => type switch {
-    "email" => new EmailNotification(),
-    "sms"   => new SmsNotification(),
-    "push"  => new PushNotification(),
-    _ => throw new ArgumentException(type)
+public static INotification Create(string type) =&gt; type switch {
+    "email" =&gt; new EmailNotification(),
+    "sms"   =&gt; new SmsNotification(),
+    "push"  =&gt; new PushNotification(),
+    _ =&gt; throw new ArgumentException(type)
 };
 
 // Strategy — interchangeable algorithms
-public interface ISortStrategy { void Sort(List<int> d); }
-public class QuickSort : ISortStrategy { public void Sort(List<int> d) { /*...*/ } }
-public class MergeSort : ISortStrategy { public void Sort(List<int> d) { /*...*/ } }
-public class Processor(ISortStrategy s) { public void Sort(List<int> d) => s.Sort(d); }
+public interface ISortStrategy { void Sort(List&lt;int&gt; d); }
+public class QuickSort : ISortStrategy { public void Sort(List&lt;int&gt; d) { /*...*/ } }
+public class MergeSort : ISortStrategy { public void Sort(List&lt;int&gt; d) { /*...*/ } }
+public class Processor(ISortStrategy s) { public void Sort(List&lt;int&gt; d) =&gt; s.Sort(d); }
 
 // Decorator — adds caching without changing IOrderRepository
 public class CachedOrderRepo(IOrderRepository inner, IMemoryCache cache)
     : IOrderRepository {
-    public async Task<Order?> GetByIdAsync(int id) {
+    public async Task&lt;Order?&gt; GetByIdAsync(int id) {
         if (cache.TryGetValue($"o_{id}", out Order? c)) return c; // cache hit
         var o = await inner.GetByIdAsync(id);                     // delegate
         cache.Set($"o_{id}", o, TimeSpan.FromMinutes(10));
@@ -616,7 +616,7 @@ git stash pop
 
 # Merge conflict resolution
 git merge develop        # conflict occurs
-# edit files — look for <<<, ===, >>>
+# edit files — look for &lt;&lt;&lt;, ===, &gt;&gt;&gt;
 git add .
 git commit -m "fix: resolve merge conflict"
 
@@ -703,7 +703,15 @@ function logout(){CU=null;CT=null;TS=null;selUid=null;pinBuf='';clearInterval(tm
 function buildSB(f=''){const p=gP(CU.id),fl=TOPICS.filter(t=>!f||t.name.toLowerCase().includes(f.toLowerCase()));document.getElementById('sbsc').innerHTML=`<div class="sbsec">Overview</div><div class="ni ${CP==='dash'?'active':''}" onclick="goTo('dash')" style="--col:var(--c4)"><span class="nd"></span>Dashboard</div><div class="sbsec">Part 2 Topics</div>`+fl.map(t=>{const tp=p[t.id],d=tp&&tp.a>0;return`<div class="ni ${CP==='topic'&&CT?.id===t.id?'active':''}${d?' done':''}" onclick="goTo('topic','${t.id}')" style="--col:${t.col}"><span class="nd"></span><span style="flex:1;font-size:12px;line-height:1.3">${t.name}</span>${d?`<span class="ns">${tp.b}%</span>`:''}</div>`;}).join('')+`<div class="sbsec">More</div><div class="ni ${CP==='hist'?'active':''}" onclick="goTo('hist')" style="--col:var(--c4)"><span class="nd"></span>Test History</div>`;}
 function fSB(v){buildSB(v)}
 function goTo(pg,tid){CP=pg;clearInterval(tmrInt);if(pg==='topic'){CT=TOPICS.find(t=>t.id===tid)}document.getElementById('hpg').textContent=pg==='dash'?'Dashboard':pg==='topic'?CT.name:pg==='test'?'Mock Test':pg==='results'?'Results':'History';buildSB(document.getElementById('sbs').value);const m=document.getElementById('main');if(pg==='dash')rDash(m);else if(pg==='topic')rTopic(m);else if(pg==='test')rTest(m);else if(pg==='results')rResults(m);else if(pg==='hist')rHist(m);m.scrollTop=0;}
-function hl(c){return c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/(\/\/[^\n]*)/g,'<span class="cmt">$1</span>').replace(/(#[^\n]*)/g,'<span class="cmt">$1</span>').replace(/\b(public|private|protected|internal|static|abstract|sealed|virtual|override|new|partial|readonly|const|var|dynamic|using|namespace|class|interface|struct|enum|record|async|await|Task|return|if|else|for|foreach|while|try|catch|finally|throw|null|true|false|void|string|int|bool|decimal|double|float|long|char|object|base|this|where|get|set|init)\b/g,'<span class="kw">$1</span>').replace(/("(?:[^"\\]|\\.)*")/g,'<span class="str">$1</span>').replace(/\b(\d+(?:\.\d+)?[mMfFdD]?)\b/g,'<span class="num">$1</span>');}
+function hl(c){
+  var s=c;
+  s=s.replace(/([\/][\/][^\n]*)/g,'<span class="cmt">$1</span>');
+  s=s.replace(/(&quot;(?:(?!&quot;).)*&quot;)/g,'<span class="str">$1</span>');
+  var kw=['public','private','protected','internal','static','abstract','sealed','virtual','override','new','partial','readonly','const','var','dynamic','using','namespace','class','interface','struct','enum','record','async','await','Task','return','if','else','for','foreach','while','try','catch','finally','throw','null','true','false','void','string','int','bool','decimal','double','float','long','char','object','base','this','where','get','set','init'];
+  kw.forEach(k=>{s=s.replace(new RegExp('\\b'+k+'\\b','g'),'<span class="kw">'+k+'</span>');});
+  s=s.replace(/\b([0-9]+(?:\.[0-9]+)?[mMfFdDlL]?)\b/g,'<span class="num">$1</span>');
+  return s;
+}
 function rDash(m){const p=gP(CU.id);let att=0,bs=0,st=0;TOPICS.forEach(t=>{const tp=p[t.id];if(tp){att+=tp.a;bs+=tp.b;st++}});const avg=st?Math.round(bs/st):0,tq=TOPICS.reduce((a,t)=>a+t.tests.length,0);m.innerHTML=`<div class="dh"><h1>Hello, ${CU.name} 👋</h1><p style="color:var(--t2);font-size:13px;margin-top:4px">Part 2 — ${TOPICS.length} topics · ${tq} mock questions</p></div><div class="sgrid"><div class="sbox"><div class="sv" style="color:var(--c4)">${st}/${TOPICS.length}</div><div class="sl">Topics started</div></div><div class="sbox"><div class="sv" style="color:var(--c3)">${att}</div><div class="sl">Tests taken</div></div><div class="sbox"><div class="sv" style="color:${avg>=70?'var(--c1)':avg>=50?'var(--c4)':'var(--danger)'}">${avg}%</div><div class="sl">Avg best score</div></div><div class="sbox"><div class="sv" style="color:var(--c5)">${TOPICS.length-st}</div><div class="sl">Remaining</div></div></div><div class="sec">Topics in Part 2</div><div class="pgrid">${TOPICS.map(t=>{const tp=p[t.id],pct=tp?tp.b:0,at=tp?tp.a:0;return`<div class="pt" onclick="goTo('topic','${t.id}')" style="--col:${t.col}"><div class="ptt"><span class="ptd"></span><span class="ptn">${t.name}</span><span class="ptc">${t.tests.length}Q</span></div><div class="pbb"><div class="pbf" style="width:${pct}%"></div></div><div class="ppc">${pct>0?pct+'% best · '+at+' test'+(at>1?'s':''):'Not started'}</div></div>`;}).join('')}</div><div class="sec">Navigate to other parts</div><div style="display:flex;gap:10px;flex-wrap:wrap"><a href="part1.html" style="display:inline-flex;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px 18px;text-decoration:none;color:var(--t1);font-size:13px">← Part 1 · C# · Collections · MVC</a><a href="part3.html" style="display:inline-flex;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px 18px;text-decoration:none;color:var(--t1);font-size:13px">Part 3 → Testing · Security · JS · Agile</a></div>`;}
 function rTopic(m){const t=CT,p=gP(CU.id),tp=p[t.id];m.innerHTML=`<div class="tban" style="--col:${t.col}"><div class="btop"><div><div class="btt">${t.name}</div><div class="bts">${t.concepts.length} concepts · ${t.tests.length} questions${tp?` · Best: ${tp.b}%`:''}</div></div><button class="stbtn" style="background:${t.col}" onclick="startTest()">Mock Test →</button></div><div class="bcs"><span class="chip cc">Core</span><span class="chip cs">Senior</span><span class="chip ca">Advanced</span></div></div><div class="sec">Concepts (${t.concepts.length})</div><div class="clist">${t.concepts.map((c,i)=>`<div class="cx"><div class="cxh" onclick="tCC(${i})" style="--col:${t.col}"><span class="ctag chip ${c.tag==='core'?'cc':c.tag==='senior'?'cs':'ca'}">${c.tag}</span><span class="cnm">${c.name}</span><span class="carr" id="ca${i}">›</span></div><div class="cxb" id="cb${i}"><div class="ctx">${c.txt}</div>${c.code?`<pre class="cb">${hl(c.code)}</pre>`:''}</div></div>`).join('')}</div><div style="text-align:center;padding:16px 0 40px"><button class="stbtn" style="background:${t.col};font-size:15px;padding:14px 32px" onclick="startTest()">Start ${t.tests.length}-question Mock Test →</button></div>`;}
 function tCC(i){const b=document.getElementById('cb'+i),a=document.getElementById('ca'+i);const o=b.classList.toggle('open');a.classList.toggle('open',o);}

@@ -292,11 +292,11 @@ txt:`<strong>Encapsulation</strong>: hide state with <code>private</code> fields
 code:`public class BankAccount {
     private decimal _balance;
     public decimal Balance {
-        get => _balance;
-        private set => _balance = value >= 0 ? value : 0;
+        get =&gt; _balance;
+        private set =&gt; _balance = value &gt;= 0 ? value : 0;
     }
     public bool Withdraw(decimal amount) {
-        if (amount > _balance) return false;
+        if (amount &gt; _balance) return false;
         _balance -= amount; return true;
     }
 }`},
@@ -305,17 +305,17 @@ txt:`<strong>Compile-time polymorphism</strong>: method overloading (same name, 
 <strong>Runtime polymorphism</strong>: <code>virtual</code> + <code>override</code> — dynamic dispatch.<br>
 <strong>Method hiding</strong>: <code>new</code> keyword — parent reference calls parent method (breaks polymorphism).<br>
 <strong>sealed override</strong>: prevents further overriding down the hierarchy.`,
-code:`public class Animal { public virtual void Speak() => Console.WriteLine("..."); }
+code:`public class Animal { public virtual void Speak() =&gt; Console.WriteLine("..."); }
 public class Dog : Animal {
-    public override void Speak() => Console.WriteLine("Woof!");
+    public override void Speak() =&gt; Console.WriteLine("Woof!");
 }
 Animal a = new Dog();
 a.Speak(); // "Woof!" — runtime polymorphism (dynamic dispatch)
 
 // Method Overloading (compile-time)
-public int Add(int a, int b) => a + b;
-public double Add(double a, double b) => a + b;
-public int Add(int a, int b, int c) => a + b + c;`},
+public int Add(int a, int b) =&gt; a + b;
+public double Add(double a, double b) =&gt; a + b;
+public int Add(int a, int b, int c) =&gt; a + b + c;`},
 {name:'Abstract Class vs Interface',tag:'core',
 txt:`<table class="dftab"><tr><th>Aspect</th><th>Abstract Class</th><th>Interface</th></tr>
 <tr><td>Instantiation</td><td>No</td><td>No</td></tr>
@@ -328,14 +328,14 @@ txt:`<table class="dftab"><tr><th>Aspect</th><th>Abstract Class</th><th>Interfac
 code:`public abstract class Shape {
     public string Color { get; set; }
     public abstract double Area();
-    public virtual string Describe() => $"Area: {Area():F2}";
+    public virtual string Describe() =&gt; $"Area: {Area():F2}";
 }
 public interface IDrawable { void Draw(); void Resize(double f); }
 public class Circle : Shape, IDrawable {
     public double Radius { get; set; }
-    public override double Area() => Math.PI * Radius * Radius;
-    public void Draw() => Console.WriteLine("Drawing circle");
-    public void Resize(double f) => Radius *= f;
+    public override double Area() =&gt; Math.PI * Radius * Radius;
+    public void Draw() =&gt; Console.WriteLine("Drawing circle");
+    public void Resize(double f) =&gt; Radius *= f;
 }`},
 {name:'Sealed, Static & Partial Classes',tag:'core',
 txt:`<strong>Sealed</strong>: cannot be inherited. <code>string</code> is sealed.<br>
@@ -345,13 +345,13 @@ txt:`<strong>Sealed</strong>: cannot be inherited. <code>string</code> is sealed
 <strong>Private constructor</strong>: prevents external instantiation. Core of Singleton pattern.`,
 code:`public sealed class Config { /* cannot be inherited */ }
 public static class MathHelper {
-    public static double CircleArea(double r) => Math.PI * r * r;
+    public static double CircleArea(double r) =&gt; Math.PI * r * r;
 }
-// Singleton with private constructor + Lazy<T>
+// Singleton with private constructor + Lazy&lt;T&gt;
 public sealed class AppCache {
-    private static readonly Lazy<AppCache> _i = new(() => new AppCache());
+    private static readonly Lazy&lt;AppCache&gt; _i = new(() =&gt; new AppCache());
     private AppCache() { }
-    public static AppCache Instance => _i.Value;
+    public static AppCache Instance =&gt; _i.Value;
 }
 // Partial class — split across files
 public partial class Customer { public string Name { get; set; } }
@@ -364,17 +364,17 @@ txt:`<strong>Stack</strong>: fast LIFO, value types + method frames. Auto-releas
 <strong>Finalizer (~ClassName)</strong>: GC fallback. Non-deterministic. Always prefer Dispose().`,
 code:`// Boxing — avoid in loops, use generics
 ArrayList al = new(); al.Add(42);    // boxes int ❌ heap allocation
-List<int> li = new(); li.Add(42);    // no boxing ✅
+List&lt;int&gt; li = new(); li.Add(42);    // no boxing ✅
 
 // Dispose pattern
 public class FileHelper : IDisposable {
     private FileStream _fs; private bool _disposed;
-    public FileHelper(string p) => _fs = File.Open(p, FileMode.Open);
+    public FileHelper(string p) =&gt; _fs = File.Open(p, FileMode.Open);
     protected virtual void Dispose(bool d) {
         if (!_disposed) { if(d) _fs?.Dispose(); _disposed = true; }
     }
     public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
-    ~FileHelper() => Dispose(false);
+    ~FileHelper() =&gt; Dispose(false);
 }
 using var fh = new FileHelper("data.txt"); // auto-disposed ✅`},
 {name:'Exception Handling & Custom Exceptions',tag:'core',
@@ -401,9 +401,9 @@ txt:`<strong>String</strong>: IMMUTABLE. Every <code>+=</code> creates a new obj
 <strong>Key methods</strong>: Trim(), ToUpper(), Contains(), Split(), Replace(), IsNullOrWhiteSpace().`,
 code:`// String immutability — avoid in loops
 string s = "";
-for(int i=0; i<1000; i++) s += i;      // ❌ 1000 new string objects!
+for(int i=0; i&lt;1000; i++) s += i;      // ❌ 1000 new string objects!
 var sb = new StringBuilder();
-for(int i=0; i<1000; i++) sb.Append(i); // ✅ single buffer
+for(int i=0; i&lt;1000; i++) sb.Append(i); // ✅ single buffer
 string result = sb.ToString();
 
 // String methods
@@ -439,73 +439,73 @@ txt:`<table class="dftab"><tr><th>Collection</th><th>Key Feature</th><th>Lookup<
 <tr><td>SortedList&lt;K,V&gt;</td><td>Sorted by key</td><td>O(log n)</td><td>Ordered key-value pairs</td></tr>
 </table>
 <strong>ArrayList vs List&lt;T&gt;</strong>: ArrayList boxes value types (slow). ALWAYS use <code>List&lt;T&gt;</code>.`,
-code:`var list = new List<int> { 1, 2, 3 };
+code:`var list = new List&lt;int&gt; { 1, 2, 3 };
 list.Add(4); list.Remove(2); list.Sort();
-var dict = new Dictionary<string, int>();
+var dict = new Dictionary&lt;string, int&gt;();
 dict["a"] = 1;
 if (dict.TryGetValue("b", out int v)) Console.WriteLine(v);
-var set = new HashSet<int> { 1, 2, 2, 3 }; // {1,2,3}
+var set = new HashSet&lt;int&gt; { 1, 2, 2, 3 }; // {1,2,3}
 set.UnionWith(new[] { 4, 5 }); set.IntersectWith(new[] { 2, 3, 4 });
-var q = new Queue<string>(); q.Enqueue("first"); q.Enqueue("second");
+var q = new Queue&lt;string&gt;(); q.Enqueue("first"); q.Enqueue("second");
 string next = q.Dequeue(); // "first" FIFO
-var stk = new Stack<int>(); stk.Push(1); stk.Push(2);
+var stk = new Stack&lt;int&gt;(); stk.Push(1); stk.Push(2);
 int top = stk.Pop(); // 2 LIFO`},
 {name:'Generics & IEnumerable vs IQueryable',tag:'core',
 txt:`<strong>Generics</strong>: type-safe, no boxing. Constraints restrict what T can be.<br>
 <strong>IEnumerable&lt;T&gt;</strong>: in-memory LINQ. Executes ALL data in C# then filters.<br>
 <strong>IQueryable&lt;T&gt;</strong>: builds SQL expression tree → WHERE sent to database. Does NOT pull all rows first!`,
 code:`// Generic method with constraint
-public T Max<T>(T a, T b) where T : IComparable<T>
-    => a.CompareTo(b) >= 0 ? a : b;
+public T Max&lt;T&gt;(T a, T b) where T : IComparable&lt;T&gt;
+    =&gt; a.CompareTo(b) &gt;= 0 ? a : b;
 // Constraints: class | struct | new() | IFoo | BaseClass
 
 // IEnumerable — in-memory LINQ to Objects ❌ for large DB tables
-IEnumerable<User> e = ctx.Users.Where(u => u.IsActive); // fetches ALL rows
+IEnumerable&lt;User&gt; e = ctx.Users.Where(u =&gt; u.IsActive); // fetches ALL rows
 
 // IQueryable — translates to SQL ✅
-IQueryable<User> q = ctx.Users.Where(u => u.IsActive);
+IQueryable&lt;User&gt; q = ctx.Users.Where(u =&gt; u.IsActive);
 // Generates: SELECT * FROM Users WHERE IsActive = 1`},
 {name:'LINQ — All Operators',tag:'core',
 txt:`<strong>Deferred execution</strong>: Where, Select, OrderBy, Skip, Take — NOT executed until iterated.<br>
 <strong>Immediate execution</strong>: ToList(), ToArray(), Count(), First(), Sum() — forces execution.<br>
 <strong>FirstOrDefault</strong>: returns first match or null. <strong>SingleOrDefault</strong>: THROWS if more than one match!`,
-code:`var res = emp.Where(e => e.IsActive)
-             .Select(e => new { e.Name, e.Salary })
-             .OrderByDescending(e => e.Salary)
+code:`var res = emp.Where(e =&gt; e.IsActive)
+             .Select(e =&gt; new { e.Name, e.Salary })
+             .OrderByDescending(e =&gt; e.Salary)
              .Skip((page-1)*size).Take(size).ToList();
 
-var byDept = emp.GroupBy(e => e.DeptId)
-    .Select(g => new { Dept=g.Key, Count=g.Count(), Avg=g.Average(e=>e.Salary) });
+var byDept = emp.GroupBy(e =&gt; e.DeptId)
+    .Select(g =&gt; new { Dept=g.Key, Count=g.Count(), Avg=g.Average(e=&gt;e.Salary) });
 
-var j = emp.Join(depts, e=>e.DeptId, d=>d.Id,
-    (e,d) => new { e.Name, d.DeptName });
+var j = emp.Join(depts, e=&gt;e.DeptId, d=&gt;d.Id,
+    (e,d) =&gt; new { e.Name, d.DeptName });
 
-bool has = emp.Any(e => e.Role == "Manager");
-bool all = emp.All(e => e.IsActive);
-var uDepts = emp.Select(e => e.DeptId).Distinct();
+bool has = emp.Any(e =&gt; e.Role == "Manager");
+bool all = emp.All(e =&gt; e.IsActive);
+var uDepts = emp.Select(e =&gt; e.DeptId).Distinct();
 
 // Deferred execution demo
-var q = emp.Where(e => e.IsActive);         // NOT executed
+var q = emp.Where(e =&gt; e.IsActive);         // NOT executed
 emp.Add(new Employee { IsActive=true });    // will be included!
 var list = q.ToList();                      // executes NOW`},
 {name:'Delegates, Func, Action, Events, Lambda',tag:'senior',
 txt:`<strong>Delegate</strong>: type-safe function pointer. <strong>Multicast</strong>: holds multiple methods.<br>
 <strong>Func&lt;T,TResult&gt;</strong>: returns value. <strong>Action&lt;T&gt;</strong>: void. <strong>Predicate&lt;T&gt;</strong>: bool.<br>
 <strong>Event</strong>: wraps delegate. Outsiders can only subscribe/unsubscribe — cannot invoke directly.`,
-code:`Func<int,int,int> add = (a,b) => a+b;
-Action<string> log = Console.WriteLine;
-Predicate<int> isPos = n => n > 0;
+code:`Func&lt;int,int,int&gt; add = (a,b) =&gt; a+b;
+Action&lt;string&gt; log = Console.WriteLine;
+Predicate&lt;int&gt; isPos = n =&gt; n &gt; 0;
 
 // Multicast delegate
-Action<string> handlers = Console.WriteLine;
-handlers += msg => File.AppendAllText("log.txt", msg);
+Action&lt;string&gt; handlers = Console.WriteLine;
+handlers += msg =&gt; File.AppendAllText("log.txt", msg);
 handlers("Hello"); // calls BOTH
 
 public class Button {
-    public event EventHandler<string> Clicked;
-    public void Click() => Clicked?.Invoke(this, "btn1"); // thread-safe null check
+    public event EventHandler&lt;string&gt; Clicked;
+    public void Click() =&gt; Clicked?.Invoke(this, "btn1"); // thread-safe null check
 }
-btn.Clicked += (s,e) => Console.WriteLine(e); // subscribe`},
+btn.Clicked += (s,e) =&gt; Console.WriteLine(e); // subscribe`},
 {name:'async / await, Task, Threading',tag:'senior',
 txt:`<strong>async/await</strong>: non-blocking I/O. Compiler generates state machine.<br>
 <strong>Task.WhenAll</strong>: concurrent tasks (faster). <strong>Task.WhenAny</strong>: first to complete.<br>
@@ -522,7 +522,7 @@ var user = await ut; var orders = await ot;
 
 // CancellationToken
 public async Task ProcessAsync(CancellationToken ct) {
-    for(int i=0; i<1000; i++) {
+    for(int i=0; i&lt;1000; i++) {
         ct.ThrowIfCancellationRequested(); // cooperative cancel
         await DoWorkAsync(i, ct);
     }
@@ -550,10 +550,10 @@ txt:`<strong>Model</strong>: data + business logic. <strong>View</strong>: UI (R
 code:`[Authorize]
 public class OrdersController : Controller {
     private readonly IOrderService _svc;
-    public OrdersController(IOrderService svc) => _svc = svc; // DI
-    public async Task<IActionResult> Index() => View(await _svc.GetAllAsync());
+    public OrdersController(IOrderService svc) =&gt; _svc = svc; // DI
+    public async Task&lt;IActionResult&gt; Index() =&gt; View(await _svc.GetAllAsync());
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(OrderViewModel vm) {
+    public async Task&lt;IActionResult&gt; Create(OrderViewModel vm) {
         if (!ModelState.IsValid) return View(vm);
         await _svc.CreateAsync(vm);
         TempData["msg"] = "Created!";
@@ -599,9 +599,9 @@ txt:`<strong>Execution order</strong>: Authorization → Action (OnExecuting) �
 <strong>Action filter</strong>: IActionFilter — OnActionExecuting/OnActionExecuted.<br>
 <strong>Exception filter</strong>: IExceptionFilter — handles unhandled exceptions from actions.`,
 code:`public class LogFilter : IActionFilter {
-    public void OnActionExecuting(ActionExecutingContext ctx) =>
+    public void OnActionExecuting(ActionExecutingContext ctx) =&gt;
         Console.WriteLine($"Executing: {ctx.ActionDescriptor.DisplayName}");
-    public void OnActionExecuted(ActionExecutedContext ctx) =>
+    public void OnActionExecuted(ActionExecutedContext ctx) =&gt;
         Console.WriteLine(ctx.Exception != null ? "Error!" : "Success");
 }
 public class GlobalExFilter : IExceptionFilter {
@@ -610,9 +610,9 @@ public class GlobalExFilter : IExceptionFilter {
         ctx.ExceptionHandled = true;
     }
 }
-builder.Services.AddControllers(o => {
-    o.Filters.Add<LogFilter>();
-    o.Filters.Add<GlobalExFilter>();
+builder.Services.AddControllers(o =&gt; {
+    o.Filters.Add&lt;LogFilter&gt;();
+    o.Filters.Add&lt;GlobalExFilter&gt;();
 });`},
 {name:'ASP.NET Core Middleware & DI Lifetimes',tag:'core',
 txt:`<strong>Middleware order CRITICAL</strong>: ExceptionHandler → HTTPS → Static → Routing → Authentication → Authorization → Endpoints.<br>
@@ -626,15 +626,15 @@ app.UseAuthentication();  // who are you?
 app.UseAuthorization();   // what can you do?
 app.MapControllers();
 
-builder.Services.AddSingleton<IAppConfig, AppConfig>();
-builder.Services.AddScoped<IOrderRepo, EfOrderRepo>();
-builder.Services.AddTransient<IEmailSvc, SmtpEmailSvc>();`},
+builder.Services.AddSingleton&lt;IAppConfig, AppConfig&gt;();
+builder.Services.AddScoped&lt;IOrderRepo, EfOrderRepo&gt;();
+builder.Services.AddTransient&lt;IEmailSvc, SmtpEmailSvc&gt;();`},
 {name:'JWT Authentication',tag:'senior',
 txt:`JWT = <code>Header.Payload.Signature</code> (Base64). Server signs with secret key.<br>
 <strong>Flow</strong>: Login → server creates JWT → client sends in <code>Authorization: Bearer &lt;token&gt;</code>.<br>
 <strong>Stateless</strong>: no DB lookup per request. Cannot revoke until expiry — use short expiry + refresh tokens.`,
 code:`builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(o => { o.TokenValidationParameters = new() {
+    .AddJwtBearer(o =&gt; { o.TokenValidationParameters = new() {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
         ValidateIssuer = true, ValidIssuer = config["Jwt:Issuer"],
@@ -656,12 +656,12 @@ txt:`<table class="dftab"><tr><th>Method</th><th>Purpose</th><th>Idempotent</th>
 code:`[ApiController, Route("api/v1/[controller]")]
 public class OrdersController : ControllerBase {
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> Get(int id) {
+    public async Task&lt;IActionResult&gt; Get(int id) {
         var o = await _svc.GetByIdAsync(id);
         return o is null ? NotFound() : Ok(o);
     }
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateOrderDto dto) {
+    public async Task&lt;IActionResult&gt; Create([FromBody] CreateOrderDto dto) {
         var created = await _svc.CreateAsync(dto);
         return CreatedAtAction(nameof(Get), new { id=created.Id }, created); // 201
     }
@@ -783,12 +783,13 @@ function goTo(pg,tid){
 
 // ─── HIGHLIGHT ───
 function hl(c){
-  return c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-   .replace(/(\/\/[^\n]*)/g,'<span class="cmt">$1</span>')
-   .replace(/(#[^\n]*)/g,'<span class="cmt">$1</span>')
-   .replace(/\b(public|private|protected|internal|static|abstract|sealed|virtual|override|new|partial|readonly|const|var|dynamic|using|namespace|class|interface|struct|enum|record|async|await|Task|return|if|else|for|foreach|while|try|catch|finally|throw|null|true|false|void|string|int|bool|decimal|double|float|long|char|object|base|this|where|get|set|init)\b/g,'<span class="kw">$1</span>')
-   .replace(/("(?:[^"\\]|\\.)*")/g,'<span class="str">$1</span>')
-   .replace(/\b(\d+(?:\.\d+)?[mMfFdD]?)\b/g,'<span class="num">$1</span>');
+  var s=c;
+  s=s.replace(/([\/][\/][^\n]*)/g,'<span class="cmt">$1</span>');
+  s=s.replace(/(&quot;(?:(?!&quot;).)*&quot;)/g,'<span class="str">$1</span>');
+  var kw=['public','private','protected','internal','static','abstract','sealed','virtual','override','new','partial','readonly','const','var','dynamic','using','namespace','class','interface','struct','enum','record','async','await','Task','return','if','else','for','foreach','while','try','catch','finally','throw','null','true','false','void','string','int','bool','decimal','double','float','long','char','object','base','this','where','get','set','init'];
+  kw.forEach(k=>{s=s.replace(new RegExp('\\b'+k+'\\b','g'),'<span class="kw">'+k+'</span>');});
+  s=s.replace(/\b([0-9]+(?:\.[0-9]+)?[mMfFdDlL]?)\b/g,'<span class="num">$1</span>');
+  return s;
 }
 
 // ─── DASHBOARD ───
